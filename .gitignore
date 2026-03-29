@@ -1,3 +1,9 @@
+# Environment / Secrets — niemals einchecken
+.env
+.env.*
+!.env.example
+run_dev.local.sh
+
 # Miscellaneous
 *.class
 *.log

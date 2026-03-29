@@ -26,10 +26,10 @@
 - [x] Flutter-Projekt anlegen inkl. Ordnerstruktur (`lib/core`, `lib/features`, `lib/app`)
 - [x] `analysis_options.yaml` mit `flutter_lints` konfiguriert
 - [x] Linting-Regeln erweitern: `prefer_single_quotes`, `avoid_print`, `always_use_package_imports`
-- [ ] `dart format` als Pre-Commit-Hook einrichten (z. B. über `lefthook` oder `git hooks`)
-- [ ] Lokale Entwicklungsumgebung: Hot-Reload bestätigen (`flutter run -d chrome`)
-- [ ] Environment-Konzept: `--dart-define` für `API_BASE_URL`, `KEYCLOAK_URL`, `KEYCLOAK_REALM`, `KEYCLOAK_CLIENT_ID`
-- [ ] `flutter_dotenv` oder Shell-Skript für lokale Dev-Defines einrichten
+- [-] `dart format` als Pre-Commit-Hook einrichten (z. B. über `lefthook` oder `git hooks`)
+- [x] Lokale Entwicklungsumgebung: Hot-Reload bestätigen (`flutter run -d chrome`)
+- [x] Environment-Konzept: `--dart-define` für `API_BASE_URL`, `KEYCLOAK_URL`, `KEYCLOAK_REALM`, `KEYCLOAK_CLIENT_ID`
+- [x] `flutter_dotenv` oder Shell-Skript für lokale Dev-Defines einrichten
 - [ ] Unit-Test-Struktur anlegen: `test/unit/`, `test/widget/`, `integration_test/`
 - [ ] `mocktail` als Test-Dependency hinzufügen
 
