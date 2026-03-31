@@ -30,8 +30,8 @@
 - [x] Lokale Entwicklungsumgebung: Hot-Reload bestätigen (`flutter run -d chrome`)
 - [x] Environment-Konzept: `--dart-define` für `API_BASE_URL`, `KEYCLOAK_URL`, `KEYCLOAK_REALM`, `KEYCLOAK_CLIENT_ID`
 - [x] `flutter_dotenv` oder Shell-Skript für lokale Dev-Defines einrichten
-- [ ] Unit-Test-Struktur anlegen: `test/unit/`, `test/widget/`, `integration_test/`
-- [ ] `mocktail` als Test-Dependency hinzufügen
+- [x] Unit-Test-Struktur anlegen: `test/unit/`, `test/widget/`, `integration_test/`
+- [x] `mocktail` als Test-Dependency hinzufügen
 
 ### Anforderung: Docker Container für Web
 
@@ -340,4 +340,4 @@ Diese Anforderungen fehlten in der ursprünglichen Liste und wurden hinzugefügt
 | Suche: lokal vs. serverseitig | Client-seitige Aggregation vs. Backend-Suche | Offen |
 | Pagination-Parameter Historie | Cursor-based vs. Offset | Abstimmen mit Backend |
 | Obsidian-Anbindung | Local REST Plugin URL konfigurierbar? Oder fest? | Offen |
-| E2E-Test-Framework | Playwright (Web) vs. Flutter `integration_test` | Offen |
+| E2E-Test-Framework | Playwright (Web) vs. Flutter `integration_test` | Tendenz Playwright — `integration_test` unterstützt Web (`-d chrome`) nicht via `flutter test` |
