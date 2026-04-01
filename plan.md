@@ -35,10 +35,10 @@
 
 ### Anforderung: Docker Container für Web
 
-- [ ] `Dockerfile` für `flutter build web` erstellen
-- [ ] Nginx-Konfiguration für SPA-Routing (`try_files $uri /index.html`)
-- [ ] `docker-compose.yml` für lokalen Stack (Frontend + ggf. Mock-Backend)
-- [ ] `.dockerignore` pflegen
+- [x] `Dockerfile` für `flutter build web` erstellen
+- [x] Nginx-Konfiguration für SPA-Routing (`try_files $uri /index.html`)
+- [x] `docker-compose.yml` für lokalen Stack (Frontend + ggf. Mock-Backend)
+- [x] `.dockerignore` pflegen
 
 ### Anforderung: CI/CD-Pipeline *(neu — fehlte in ursprünglichen Anforderungen)*
 

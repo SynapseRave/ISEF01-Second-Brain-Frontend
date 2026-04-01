@@ -1,0 +1,13 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        API_BASE_URL: ${API_BASE_URL:-http://localhost:8080}
+        KEYCLOAK_URL: ${KEYCLOAK_URL:-http://localhost:8180}
+        KEYCLOAK_REALM: ${KEYCLOAK_REALM:-second-brain}
+        KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-frontend}
+    ports:
+      - "3000:80"
+    restart: unless-stopped
