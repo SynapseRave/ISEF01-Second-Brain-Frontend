@@ -44,10 +44,10 @@
 
 > Begründung: Ohne automatisierte Checks hat Codequalität keinen Anker. Notwendig für kollaboratives Arbeiten.
 
-- [ ] GitHub Actions Workflow: `flutter analyze` + `flutter test` bei jedem PR
-- [ ] GitHub Actions Workflow: `dart format --output=none --set-exit-if-changed` (Format-Check)
-- [ ] Build-Job: `flutter build web` als Smoke-Test
-- [ ] Optional: Docker Image bauen + pushen bei Merge auf `main`
+- [x] GitHub Actions Workflow: `flutter analyze` + `flutter test` bei jedem PR
+- [x] GitHub Actions Workflow: `dart format --output=none --set-exit-if-changed` (Format-Check)
+- [x] Build-Job: `flutter build web` als Smoke-Test
+- [x] Optional: Docker Image bauen + pushen bei Merge auf `main`
 
 ---
 
