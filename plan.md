@@ -85,10 +85,10 @@
 
 > Begründung: DI muss früh stehen, alle späteren Features hängen davon ab.
 
-- [ ] `get_it` + `injectable` zu `pubspec.yaml` hinzufügen
-- [ ] `lib/core/di/injection.dart` mit `@InjectableInit` anlegen
-- [ ] Code-Generierung: `dart run build_runner build` in Workflow dokumentieren
-- [ ] `ServiceLocator`-Wrapper für einfachen Zugriff
+- [x] `get_it` + `injectable` zu `pubspec.yaml` hinzufügen
+- [x] `lib/core/di/injection.dart` mit `@InjectableInit` anlegen
+- [x] Code-Generierung: `dart run build_runner build` in Workflow dokumentieren
+- [x] `ServiceLocator`-Wrapper für einfachen Zugriff
 
 ---
 
