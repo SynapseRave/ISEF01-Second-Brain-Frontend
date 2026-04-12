@@ -75,11 +75,11 @@
 
 ### Anforderung: UI Shell / Grundlayout implementieren
 
-- [ ] Responsives Shell-Layout: `NavigationRail` (Desktop) / `BottomNavigationBar` (Mobile)
-- [ ] Navigation einrichten: Dashboard, Suche, Historie, Einstellungen
-- [ ] `GoRouter` konfigurieren mit Named Routes
-- [ ] Route Guards (Platzhalter bis Auth steht — zunächst alle Routen offen)
-- [ ] Shell persistiert Chat-Fenster als globales Overlay
+- [x] Responsives Shell-Layout: `NavigationRail` (Desktop) / `BottomNavigationBar` (Mobile)
+- [x] Navigation einrichten: Dashboard, Suche, Historie, Einstellungen
+- [x] `GoRouter` konfigurieren mit Named Routes
+- [x] Route Guards (Platzhalter bis Auth steht — zunächst alle Routen offen)
+- [x] Shell persistiert Chat-Fenster als globales Overlay
 
 ### Anforderung: Dependency Injection aufsetzen *(neu — fehlte als explizite Task)*
 
