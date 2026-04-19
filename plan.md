@@ -59,36 +59,36 @@
 
 > Begründung: Ohne gemeinsame Basiskomponenten entstehen inkonsistente UIs. Muss vor den Feature-Pages stehen.
 
-- [ ] `AppTheme` definieren: Farben, Typografie, Spacing-Konstanten (Material 3)
-- [ ] Dark Mode / Theme-Toggle implementieren *(neu — fehlte komplett)*
-  - [ ] `ThemeCubit` für persistierten Theme-Wechsel (`shared_preferences`)
-  - [ ] Theme-Toggle in App-Shell einbauen
-- [ ] Shared Widget Library unter `lib/core/widgets/`:
-  - [ ] `AppLoadingIndicator` (zentriert, overlay-fähig)
-  - [ ] `AppErrorView` (Icon + Nachricht + Retry-Button)
-  - [ ] `AppEmptyView` (Illustration + Nachricht)
-  - [ ] `AppToast` / `SnackbarService` für Action-Feedback *(neu — fehlte)*
-  - [ ] `AppConfirmDialog` (wiederverwendbar für Delete-Flows)
-  - [ ] `AppButton` (Primary, Secondary, Destructive)
-  - [ ] `AppTextField` mit konsistenter Validierungsdarstellung
-- [ ] Responsive Breakpoints definieren: mobile `<600`, tablet `<1024`, desktop `≥1024`
+- [x] `AppTheme` definieren: Farben, Typografie, Spacing-Konstanten (Material 3)
+- [x] Dark Mode / Theme-Toggle implementieren *(neu — fehlte komplett)*
+  - [x] `ThemeCubit` für persistierten Theme-Wechsel (`shared_preferences`)
+  - [x] Theme-Toggle in App-Shell einbauen
+- [x] Shared Widget Library unter `lib/core/widgets/`:
+  - [x] `AppLoadingIndicator` (zentriert, overlay-fähig)
+  - [x] `AppErrorView` (Icon + Nachricht + Retry-Button)
+  - [x] `AppEmptyView` (Illustration + Nachricht)
+  - [x] `AppToast` / `SnackbarService` für Action-Feedback *(neu — fehlte)*
+  - [x] `AppConfirmDialog` (wiederverwendbar für Delete-Flows)
+  - [x] `AppButton` (Primary, Secondary, Destructive)
+  - [x] `AppTextField` mit konsistenter Validierungsdarstellung
+- [x] Responsive Breakpoints definieren: mobile `<600`, tablet `<1024`, desktop `≥1024`
 
 ### Anforderung: UI Shell / Grundlayout implementieren
 
-- [ ] Responsives Shell-Layout: `NavigationRail` (Desktop) / `BottomNavigationBar` (Mobile)
-- [ ] Navigation einrichten: Dashboard, Suche, Historie, Einstellungen
-- [ ] `GoRouter` konfigurieren mit Named Routes
-- [ ] Route Guards (Platzhalter bis Auth steht — zunächst alle Routen offen)
-- [ ] Shell persistiert Chat-Fenster als globales Overlay
+- [x] Responsives Shell-Layout: `NavigationRail` (Desktop) / `BottomNavigationBar` (Mobile)
+- [x] Navigation einrichten: Dashboard, Suche, Historie, Einstellungen
+- [x] `GoRouter` konfigurieren mit Named Routes
+- [x] Route Guards (Platzhalter bis Auth steht — zunächst alle Routen offen)
+- [x] Shell persistiert Chat-Fenster als globales Overlay
 
 ### Anforderung: Dependency Injection aufsetzen *(neu — fehlte als explizite Task)*
 
 > Begründung: DI muss früh stehen, alle späteren Features hängen davon ab.
 
-- [ ] `get_it` + `injectable` zu `pubspec.yaml` hinzufügen
-- [ ] `lib/core/di/injection.dart` mit `@InjectableInit` anlegen
-- [ ] Code-Generierung: `dart run build_runner build` in Workflow dokumentieren
-- [ ] `ServiceLocator`-Wrapper für einfachen Zugriff
+- [x] `get_it` + `injectable` zu `pubspec.yaml` hinzufügen
+- [x] `lib/core/di/injection.dart` mit `@InjectableInit` anlegen
+- [x] Code-Generierung: `dart run build_runner build` in Workflow dokumentieren
+- [x] `ServiceLocator`-Wrapper für einfachen Zugriff
 
 ---
 

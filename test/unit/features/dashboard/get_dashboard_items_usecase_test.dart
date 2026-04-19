@@ -25,9 +25,9 @@ void main() {
 
     test('gibt Items zurück wenn Repository erfolgreich antwortet', () async {
       // arrange — Mock definieren: was soll das Repository zurückgeben?
-      when(() => mockRepository.getDashboardItems()).thenAnswer(
-        (_) async => (items: tItems, failure: null),
-      );
+      when(
+        () => mockRepository.getDashboardItems(),
+      ).thenAnswer((_) async => (items: tItems, failure: null));
 
       // act — Use Case aufrufen
       final result = await useCase();
@@ -40,9 +40,9 @@ void main() {
 
     test('gibt Failure zurück wenn Repository fehlschlägt', () async {
       const tFailure = NetworkFailure();
-      when(() => mockRepository.getDashboardItems()).thenAnswer(
-        (_) async => (items: <DashboardItem>[], failure: tFailure),
-      );
+      when(
+        () => mockRepository.getDashboardItems(),
+      ).thenAnswer((_) async => (items: <DashboardItem>[], failure: tFailure));
 
       final result = await useCase();
 

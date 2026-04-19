@@ -3,8 +3,7 @@ import 'package:isef01_second_brain_frontend/features/chat/domain/repositories/c
 
 class ChatRepositoryImpl implements ChatRepository {
   @override
-  Stream<String> sendMessage(String content) =>
-      const Stream.empty(); // TODO(phase-7)
+  Stream<String> sendMessage(String content) => const Stream.empty(); // TODO(phase-7)
 
   @override
   Future<Failure?> clearHistory() async => null;

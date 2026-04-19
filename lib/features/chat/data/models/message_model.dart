@@ -9,11 +9,11 @@ class MessageModel {
   });
 
   factory MessageModel.fromJson(Map<String, dynamic> json) => MessageModel(
-        id: json['id'] as String,
-        role: json['role'] as String,
-        content: json['content'] as String,
-        createdAt: DateTime.parse(json['created_at'] as String),
-      );
+    id: json['id'] as String,
+    role: json['role'] as String,
+    content: json['content'] as String,
+    createdAt: DateTime.parse(json['created_at'] as String),
+  );
 
   final String id;
   final String role;
@@ -21,9 +21,9 @@ class MessageModel {
   final DateTime createdAt;
 
   Message toEntity() => Message(
-        id: id,
-        role: role == 'user' ? MessageRole.user : MessageRole.assistant,
-        content: content,
-        createdAt: createdAt,
-      );
+    id: id,
+    role: role == 'user' ? MessageRole.user : MessageRole.assistant,
+    content: content,
+    createdAt: createdAt,
+  );
 }

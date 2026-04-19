@@ -23,18 +23,18 @@ class DashboardItemModel {
   final String sourceService;
 
   DashboardItem toEntity() => switch (type) {
-        'todo' => TodoItem(
-            id: id,
-            title: title,
-            sourceService: sourceService,
-            isDone: false,
-          ),
-        'event' => CalendarEventItem(
-            id: id,
-            title: title,
-            sourceService: sourceService,
-            startTime: DateTime.now(),
-          ),
-        _ => NoteItem(id: id, title: title, sourceService: sourceService),
-      };
+    'todo' => TodoItem(
+      id: id,
+      title: title,
+      sourceService: sourceService,
+      isDone: false,
+    ),
+    'event' => CalendarEventItem(
+      id: id,
+      title: title,
+      sourceService: sourceService,
+      startTime: DateTime.now(),
+    ),
+    _ => NoteItem(id: id, title: title, sourceService: sourceService),
+  };
 }

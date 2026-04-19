@@ -22,9 +22,9 @@ class HistoryEntryModel {
   final DateTime createdAt;
 
   HistoryEntry toEntity() => HistoryEntry(
-        id: id,
-        input: input,
-        response: response,
-        createdAt: createdAt,
-      );
+    id: id,
+    input: input,
+    response: response,
+    createdAt: createdAt,
+  );
 }
