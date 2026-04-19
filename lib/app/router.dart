@@ -8,9 +8,9 @@ import 'package:isef01_second_brain_frontend/features/settings/presentation/page
 /// Named-Route-Konstanten — als einzige Referenz in der gesamten App nutzen.
 abstract final class AppRoutes {
   static const dashboard = '/';
-  static const search    = '/search';
-  static const history   = '/history';
-  static const settings  = '/settings';
+  static const search = '/search';
+  static const history = '/history';
+  static const settings = '/settings';
 }
 
 /// Zentrale Router-Konfiguration mit GoRouter.

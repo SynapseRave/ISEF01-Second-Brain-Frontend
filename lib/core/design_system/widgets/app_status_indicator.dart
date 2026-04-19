@@ -36,9 +36,10 @@ class _SkeletonBoxState extends State<SkeletonBox>
       vsync: this,
       duration: const Duration(milliseconds: 1400),
     )..repeat();
-    _shimmer = Tween<double>(begin: -1, end: 2).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _shimmer = Tween<double>(
+      begin: -1,
+      end: 2,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -93,9 +94,7 @@ class SkeletonLines extends StatelessWidget {
       children: List.generate(lines, (i) {
         final fraction = _widths[i % _widths.length];
         return Padding(
-          padding: EdgeInsets.only(
-            bottom: i < lines - 1 ? AppSpacing.px8 : 0,
-          ),
+          padding: EdgeInsets.only(bottom: i < lines - 1 ? AppSpacing.px8 : 0),
           child: FractionallySizedBox(
             widthFactor: fraction,
             child: const SkeletonBox(height: 14),
@@ -119,14 +118,14 @@ class AppSpinner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final px = switch (size) {
-      SpinnerSize.small  => 16.0,
+      SpinnerSize.small => 16.0,
       SpinnerSize.medium => 24.0,
-      SpinnerSize.large  => 32.0,
+      SpinnerSize.large => 32.0,
     };
     final stroke = switch (size) {
-      SpinnerSize.small  => 1.5,
+      SpinnerSize.small => 1.5,
       SpinnerSize.medium => 2.0,
-      SpinnerSize.large  => 2.5,
+      SpinnerSize.large => 2.5,
     };
 
     return SizedBox(
@@ -196,9 +195,7 @@ class _TypingDotsState extends State<TypingDots>
               mainAxisSize: MainAxisSize.min,
               children: List.generate(3, (i) {
                 final phase = (i / 3);
-                final val = math.sin(
-                  (_controller.value - phase) * 2 * math.pi,
-                );
+                final val = math.sin((_controller.value - phase) * 2 * math.pi);
                 final opacity = ((val + 1) / 2).clamp(0.25, 1.0);
                 return Padding(
                   padding: EdgeInsets.only(right: i < 2 ? 3 : 0),

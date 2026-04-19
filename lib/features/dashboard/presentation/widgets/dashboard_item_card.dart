@@ -8,9 +8,9 @@ class DashboardItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Card(
-        child: ListTile(
-          title: Text(item.title),
-          subtitle: Text(item.sourceService),
-        ),
-      );
+    child: ListTile(
+      title: Text(item.title),
+      subtitle: Text(item.sourceService),
+    ),
+  );
 }

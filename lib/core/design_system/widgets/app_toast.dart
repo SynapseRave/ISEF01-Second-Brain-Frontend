@@ -47,29 +47,29 @@ class _ToastContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final (icon, iconColor, bg, border) = switch (type) {
       ToastType.success => (
-          Icons.check_circle_outline,
-          AppColors.success,
-          AppColors.successLight,
-          AppColors.success,
-        ),
+        Icons.check_circle_outline,
+        AppColors.success,
+        AppColors.successLight,
+        AppColors.success,
+      ),
       ToastType.error => (
-          Icons.error_outline,
-          AppColors.error,
-          AppColors.errorLight,
-          AppColors.error,
-        ),
+        Icons.error_outline,
+        AppColors.error,
+        AppColors.errorLight,
+        AppColors.error,
+      ),
       ToastType.info => (
-          Icons.info_outline,
-          AppColors.slate700,
-          AppColors.white,
-          AppColors.slate300,
-        ),
+        Icons.info_outline,
+        AppColors.slate700,
+        AppColors.white,
+        AppColors.slate300,
+      ),
       ToastType.loading => (
-          null,
-          AppColors.warning,
-          AppColors.warningLight,
-          AppColors.warning,
-        ),
+        null,
+        AppColors.warning,
+        AppColors.warningLight,
+        AppColors.warning,
+      ),
     };
 
     return Container(
@@ -101,9 +101,7 @@ class _ToastContent extends StatelessWidget {
             child: Text(
               message,
               style: AppTypography.bodySm.copyWith(
-                color: type == ToastType.info
-                    ? AppColors.slate700
-                    : iconColor,
+                color: type == ToastType.info ? AppColors.slate700 : iconColor,
                 fontWeight: FontWeight.w500,
               ),
             ),

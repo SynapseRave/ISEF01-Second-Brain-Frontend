@@ -7,5 +7,5 @@ import 'package:isef01_second_brain_frontend/features/dashboard/domain/repositor
 class DashboardRepositoryImpl implements DashboardRepository {
   @override
   Future<({List<DashboardItem> items, Failure? failure})>
-      getDashboardItems() async => (items: <DashboardItem>[], failure: null);
+  getDashboardItems() async => (items: <DashboardItem>[], failure: null);
 }

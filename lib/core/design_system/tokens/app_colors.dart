@@ -21,28 +21,28 @@ abstract final class AppColors {
   static const Color slate300 = Color(0xFFCBD5E1); // Trennlinien
   static const Color slate200 = Color(0xFFE2E8F0); // Disabled-Hintergründe
   static const Color slate100 = Color(0xFFF1F5F9); // App-Hintergrund
-  static const Color slate50  = Color(0xFFF8FAFC); // Card-Hintergrund (leicht)
+  static const Color slate50 = Color(0xFFF8FAFC); // Card-Hintergrund (leicht)
 
   // ── Semantisch ───────────────────────────────────────────────────────────
-  static const Color success      = Color(0xFF22C55E);
+  static const Color success = Color(0xFF22C55E);
   static const Color successLight = Color(0xFFDCFCE7);
-  static const Color warning      = Color(0xFFF59E0B);
+  static const Color warning = Color(0xFFF59E0B);
   static const Color warningLight = Color(0xFFFEF3C7);
-  static const Color error        = Color(0xFFEF4444);
-  static const Color errorLight   = Color(0xFFFEE2E2);
-  static const Color info         = Color(0xFF3B82F6);
-  static const Color infoLight    = Color(0xFFDBEAFE);
+  static const Color error = Color(0xFFEF4444);
+  static const Color errorLight = Color(0xFFFEE2E2);
+  static const Color info = Color(0xFF3B82F6);
+  static const Color infoLight = Color(0xFFDBEAFE);
 
   // ── Service-Farben ───────────────────────────────────────────────────────
-  static const Color notion    = Color(0xFF000000);
-  static const Color todoist   = Color(0xFFDB4035);
-  static const Color obsidian  = Color(0xFF7C3AED);
-  static const Color oneNote   = Color(0xFF7719AA);
-  static const Color kalender  = Color(0xFF1A73E8);
+  static const Color notion = Color(0xFF000000);
+  static const Color todoist = Color(0xFFDB4035);
+  static const Color obsidian = Color(0xFF7C3AED);
+  static const Color oneNote = Color(0xFF7719AA);
+  static const Color kalender = Color(0xFF1A73E8);
 
   // ── Surface / Background ─────────────────────────────────────────────────
-  static const Color white      = Color(0xFFFFFFFF);
-  static const Color surface    = Color(0xFFFFFFFF);
+  static const Color white = Color(0xFFFFFFFF);
+  static const Color surface = Color(0xFFFFFFFF);
   static const Color background = slate100;
 
   // ── Gradienten ───────────────────────────────────────────────────────────

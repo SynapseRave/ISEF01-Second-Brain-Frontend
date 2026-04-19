@@ -1,4 +1,5 @@
 enum ServiceType { notion, todoist, obsidian, oneNote, googleCalendar }
+
 enum ConnectionStatus { connected, disconnected, connecting, error }
 
 class ServiceConnection {

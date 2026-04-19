@@ -79,9 +79,7 @@ class AppConfirmDialog extends StatelessWidget {
                   size: 22,
                 ),
                 const SizedBox(width: AppSpacing.px8),
-                Expanded(
-                  child: Text(title, style: AppTypography.h4),
-                ),
+                Expanded(child: Text(title, style: AppTypography.h4)),
               ],
             ),
             const SizedBox(height: AppSpacing.px12),

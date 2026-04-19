@@ -34,10 +34,7 @@ class _DesktopDashboard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Ergänzende Panels: feste Breite, scrollbar
-        SizedBox(
-          width: 320,
-          child: SupplementaryPanels(),
-        ),
+        SizedBox(width: 320, child: SupplementaryPanels()),
         VerticalDivider(width: 1, color: AppColors.slate200),
         // Chat: nimmt den gesamten restlichen Platz ein
         Expanded(child: ChatPanel()),

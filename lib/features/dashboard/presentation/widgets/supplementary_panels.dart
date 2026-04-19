@@ -66,11 +66,29 @@ class SupplementaryPanelsCompact extends StatelessWidget {
       ),
       child: const Row(
         children: [
-          Expanded(child: _CompactTile(icon: Icons.description_outlined,    label: 'Notizen',   count: '0')),
+          Expanded(
+            child: _CompactTile(
+              icon: Icons.description_outlined,
+              label: 'Notizen',
+              count: '0',
+            ),
+          ),
           SizedBox(width: AppSpacing.px8),
-          Expanded(child: _CompactTile(icon: Icons.check_box_outlined,      label: 'Todos',     count: '0')),
+          Expanded(
+            child: _CompactTile(
+              icon: Icons.check_box_outlined,
+              label: 'Todos',
+              count: '0',
+            ),
+          ),
           SizedBox(width: AppSpacing.px8),
-          Expanded(child: _CompactTile(icon: Icons.calendar_today_outlined, label: 'Kalender',  count: '0')),
+          Expanded(
+            child: _CompactTile(
+              icon: Icons.calendar_today_outlined,
+              label: 'Kalender',
+              count: '0',
+            ),
+          ),
         ],
       ),
     );
@@ -103,8 +121,10 @@ class _SectionPanel extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(
-              AppSpacing.px16, AppSpacing.px12,
-              AppSpacing.px16, AppSpacing.px8,
+              AppSpacing.px16,
+              AppSpacing.px12,
+              AppSpacing.px16,
+              AppSpacing.px8,
             ),
             child: Row(
               children: [
@@ -149,9 +169,7 @@ class _CompactTile extends StatelessWidget {
         children: [
           Icon(icon, size: 16, color: AppColors.slate400),
           const SizedBox(width: AppSpacing.px8),
-          Expanded(
-            child: Text(label, style: AppTypography.bodySm),
-          ),
+          Expanded(child: Text(label, style: AppTypography.bodySm)),
           Text(
             count,
             style: AppTypography.labelSm.copyWith(color: AppColors.slate400),

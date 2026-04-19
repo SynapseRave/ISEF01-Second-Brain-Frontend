@@ -44,9 +44,7 @@ class _ChatOverlayPanelState extends State<ChatOverlayPanel> {
         children: [
           _Header(onClose: widget.onClose),
           const Divider(height: 1),
-          Expanded(
-            child: _MessageArea(scrollController: _scrollController),
-          ),
+          Expanded(child: _MessageArea(scrollController: _scrollController)),
           const Divider(height: 1),
           _InputArea(controller: _controller),
         ],
@@ -91,16 +89,14 @@ class _Header extends StatelessWidget {
                 Text('AI Assistent', style: AppTypography.h4),
                 Text(
                   'Second Brain',
-                  style: AppTypography.body11
-                      .copyWith(color: AppColors.slate400),
+                  style: AppTypography.body11.copyWith(
+                    color: AppColors.slate400,
+                  ),
                 ),
               ],
             ),
           ),
-          AppButton.icon(
-            icon: Icons.close_rounded,
-            onPressed: onClose,
-          ),
+          AppButton.icon(icon: Icons.close_rounded, onPressed: onClose),
         ],
       ),
     );
@@ -120,7 +116,8 @@ class _MessageArea extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.px16),
       children: [
         _AssistantBubble(
-          text: 'Hallo! Ich bin dein Second Brain Assistent. '
+          text:
+              'Hallo! Ich bin dein Second Brain Assistent. '
               'Ich kann dir helfen, Notizen zu erstellen, '
               'Todos zu verwalten und deine Termine zu überblicken.\n\n'
               'Was kann ich für dich tun?',
@@ -129,8 +126,7 @@ class _MessageArea extends StatelessWidget {
         const SizedBox(height: AppSpacing.px16),
         Text(
           'Beispiel-Anfragen:',
-          style:
-              AppTypography.bodyXs.copyWith(color: AppColors.slate400),
+          style: AppTypography.bodyXs.copyWith(color: AppColors.slate400),
         ),
         const SizedBox(height: AppSpacing.px8),
         Wrap(
@@ -249,8 +245,9 @@ class _InputArea extends StatelessWidget {
               style: AppTypography.bodySm,
               decoration: InputDecoration(
                 hintText: 'Nachricht schreiben...',
-                hintStyle: AppTypography.bodySm
-                    .copyWith(color: AppColors.slate400),
+                hintStyle: AppTypography.bodySm.copyWith(
+                  color: AppColors.slate400,
+                ),
                 filled: true,
                 fillColor: AppColors.slate50,
                 contentPadding: const EdgeInsets.symmetric(
@@ -259,8 +256,7 @@ class _InputArea extends StatelessWidget {
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
-                  borderSide:
-                      const BorderSide(color: AppColors.slate200),
+                  borderSide: const BorderSide(color: AppColors.slate200),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
@@ -282,8 +278,11 @@ class _InputArea extends StatelessWidget {
             ),
             child: IconButton(
               padding: EdgeInsets.zero,
-              icon: const Icon(Icons.send_rounded,
-                  size: 16, color: AppColors.white),
+              icon: const Icon(
+                Icons.send_rounded,
+                size: 16,
+                color: AppColors.white,
+              ),
               onPressed: () {},
             ),
           ),

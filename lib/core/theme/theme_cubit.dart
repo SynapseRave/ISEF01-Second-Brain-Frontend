@@ -23,14 +23,14 @@ class ThemeCubit extends Cubit<ThemeMode> {
   static ThemeMode _load(SharedPreferences prefs) {
     final stored = prefs.getString(_key);
     return switch (stored) {
-      'dark'  => ThemeMode.dark,
+      'dark' => ThemeMode.dark,
       'light' => ThemeMode.light,
-      _       => ThemeMode.system,
+      _ => ThemeMode.system,
     };
   }
 
   void setLight() => _save(ThemeMode.light);
-  void setDark()  => _save(ThemeMode.dark);
+  void setDark() => _save(ThemeMode.dark);
 
   void toggle() => state == ThemeMode.dark ? setLight() : setDark();
 

@@ -13,7 +13,7 @@ class ServiceConnectionModel {
   final String status;
 
   ServiceConnection toEntity() => ServiceConnection(
-        service: ServiceType.values.firstWhere((e) => e.name == service),
-        status: ConnectionStatus.values.firstWhere((e) => e.name == status),
-      );
+    service: ServiceType.values.firstWhere((e) => e.name == service),
+    status: ConnectionStatus.values.firstWhere((e) => e.name == status),
+  );
 }

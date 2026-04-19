@@ -4,6 +4,7 @@ import 'package:isef01_second_brain_frontend/core/design_system/tokens/app_spaci
 import 'package:isef01_second_brain_frontend/core/design_system/tokens/app_typography.dart';
 
 enum AppButtonVariant { primary, secondary, ghost }
+
 enum AppButtonSize { small, medium, large }
 
 /// Universeller Button des Second Brain Design Systems.
@@ -28,10 +29,10 @@ class AppButton extends StatelessWidget {
     required this.icon,
     this.onPressed,
     this.size = AppButtonSize.medium,
-  })  : label = null,
-        variant = AppButtonVariant.ghost,
-        isDestructive = false,
-        isSuccess = false;
+  }) : label = null,
+       variant = AppButtonVariant.ghost,
+       isDestructive = false,
+       isSuccess = false;
 
   final String? label;
   final VoidCallback? onPressed;
@@ -46,9 +47,9 @@ class AppButton extends StatelessWidget {
     final bool isDisabled = onPressed == null;
 
     return switch (variant) {
-      AppButtonVariant.primary    => _PrimaryButton(this, isDisabled),
-      AppButtonVariant.secondary  => _SecondaryButton(this, isDisabled),
-      AppButtonVariant.ghost      => _GhostButton(this, isDisabled),
+      AppButtonVariant.primary => _PrimaryButton(this, isDisabled),
+      AppButtonVariant.secondary => _SecondaryButton(this, isDisabled),
+      AppButtonVariant.ghost => _GhostButton(this, isDisabled),
     };
   }
 }
@@ -58,32 +59,39 @@ class AppButton extends StatelessWidget {
 EdgeInsets _padding(AppButtonSize size, bool iconOnly) {
   if (iconOnly) {
     return switch (size) {
-      AppButtonSize.small  => const EdgeInsets.all(AppSpacing.px6),
+      AppButtonSize.small => const EdgeInsets.all(AppSpacing.px6),
       AppButtonSize.medium => const EdgeInsets.all(AppSpacing.px8),
-      AppButtonSize.large  => const EdgeInsets.all(AppSpacing.px10),
+      AppButtonSize.large => const EdgeInsets.all(AppSpacing.px10),
     };
   }
   return switch (size) {
-    AppButtonSize.small  => const EdgeInsets.symmetric(
-        horizontal: AppSpacing.px12, vertical: AppSpacing.px6),
+    AppButtonSize.small => const EdgeInsets.symmetric(
+      horizontal: AppSpacing.px12,
+      vertical: AppSpacing.px6,
+    ),
     AppButtonSize.medium => const EdgeInsets.symmetric(
-        horizontal: AppSpacing.px16, vertical: AppSpacing.px8),
-    AppButtonSize.large  => const EdgeInsets.symmetric(
-        horizontal: AppSpacing.px20, vertical: AppSpacing.px12),
+      horizontal: AppSpacing.px16,
+      vertical: AppSpacing.px8,
+    ),
+    AppButtonSize.large => const EdgeInsets.symmetric(
+      horizontal: AppSpacing.px20,
+      vertical: AppSpacing.px12,
+    ),
   };
 }
 
 double _iconSize(AppButtonSize size) => switch (size) {
-  AppButtonSize.small  => 14,
+  AppButtonSize.small => 14,
   AppButtonSize.medium => 16,
-  AppButtonSize.large  => 18,
+  AppButtonSize.large => 18,
 };
 
 TextStyle _labelStyle(AppButtonSize size) => switch (size) {
-  AppButtonSize.small  => AppTypography.labelXs,
+  AppButtonSize.small => AppTypography.labelXs,
   AppButtonSize.medium => AppTypography.labelSm,
-  AppButtonSize.large  => AppTypography.bodyBase.copyWith(
-      fontWeight: FontWeight.w500),
+  AppButtonSize.large => AppTypography.bodyBase.copyWith(
+    fontWeight: FontWeight.w500,
+  ),
 };
 
 Widget _buttonContent(AppButton btn, Color textColor) {
@@ -203,8 +211,8 @@ class _GhostButton extends StatelessWidget {
     final textColor = isDisabled
         ? AppColors.slate300
         : btn.isDestructive
-            ? AppColors.error
-            : AppColors.slate500;
+        ? AppColors.error
+        : AppColors.slate500;
 
     final iconOnly = btn.label == null;
 

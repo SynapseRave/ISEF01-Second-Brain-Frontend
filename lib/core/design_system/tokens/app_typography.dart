@@ -8,13 +8,13 @@ import 'package:isef01_second_brain_frontend/core/design_system/tokens/app_color
 abstract final class AppTypography {
   // ── Schriftgrößen ─────────────────────────────────────────────────────────
   static const double _size2xl = 24;
-  static const double _sizeXl  = 20;
-  static const double _sizeLg  = 18;
-  static const double _sizeMd  = 16; // text-base
-  static const double _sizeSm  = 14;
-  static const double _sizeXs  = 12;
-  static const double _size11  = 11;
-  static const double _size10  = 10;
+  static const double _sizeXl = 20;
+  static const double _sizeLg = 18;
+  static const double _sizeMd = 16; // text-base
+  static const double _sizeSm = 14;
+  static const double _sizeXs = 12;
+  static const double _size11 = 11;
+  static const double _size10 = 10;
 
   // ── Headings ──────────────────────────────────────────────────────────────
   static const TextStyle h1 = TextStyle(

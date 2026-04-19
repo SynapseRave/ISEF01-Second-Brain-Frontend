@@ -32,9 +32,7 @@ class _ChatPanelState extends State<ChatPanel> {
         children: [
           _ChatHeader(),
           const Divider(height: 1, color: AppColors.slate200),
-          Expanded(
-            child: _MessageArea(scrollController: _scrollController),
-          ),
+          Expanded(child: _MessageArea(scrollController: _scrollController)),
           const Divider(height: 1, color: AppColors.slate200),
           _InputArea(controller: _controller),
         ],
@@ -75,9 +73,7 @@ class _ChatHeader extends StatelessWidget {
               Text('AI Assistent', style: AppTypography.h4),
               Text(
                 'Second Brain',
-                style: AppTypography.body11.copyWith(
-                  color: AppColors.slate400,
-                ),
+                style: AppTypography.body11.copyWith(color: AppColors.slate400),
               ),
             ],
           ),
@@ -110,7 +106,8 @@ class _MessageArea extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.px20),
       children: [
         _AssistantBubble(
-          text: 'Hallo! Ich bin dein Second Brain Assistent. '
+          text:
+              'Hallo! Ich bin dein Second Brain Assistent. '
               'Ich kann dir helfen, Notizen zu erstellen, '
               'Todos zu verwalten und deine Termine zu überblicken.\n\n'
               'Was kann ich für dich tun?',
@@ -251,13 +248,11 @@ class _InputArea extends StatelessWidget {
                   vertical: AppSpacing.px12,
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.circular(AppSpacing.radiusFull),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
                   borderSide: const BorderSide(color: AppColors.slate200),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.circular(AppSpacing.radiusFull),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
                   borderSide: const BorderSide(
                     color: AppColors.indigo600,
                     width: 2,
@@ -276,8 +271,11 @@ class _InputArea extends StatelessWidget {
             ),
             child: IconButton(
               padding: EdgeInsets.zero,
-              icon: const Icon(Icons.send_rounded,
-                  size: 18, color: AppColors.white),
+              icon: const Icon(
+                Icons.send_rounded,
+                size: 18,
+                color: AppColors.white,
+              ),
               onPressed: () {},
             ),
           ),
@@ -286,4 +284,3 @@ class _InputArea extends StatelessWidget {
     );
   }
 }
-

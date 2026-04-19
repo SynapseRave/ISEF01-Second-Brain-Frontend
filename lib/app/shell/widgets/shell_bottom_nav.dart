@@ -7,10 +7,10 @@ class ShellBottomNav extends StatelessWidget {
   const ShellBottomNav({super.key});
 
   static const _items = [
-    (Icons.grid_view_rounded,    'Dashboard',     '/'),
-    (Icons.search_rounded,        'Suche',         '/search'),
-    (Icons.history_rounded,       'Historie',      '/history'),
-    (Icons.settings_outlined,     'Einstellungen', '/settings'),
+    (Icons.grid_view_rounded, 'Dashboard', '/'),
+    (Icons.search_rounded, 'Suche', '/search'),
+    (Icons.history_rounded, 'Historie', '/history'),
+    (Icons.settings_outlined, 'Einstellungen', '/settings'),
   ];
 
   @override
@@ -18,9 +18,7 @@ class ShellBottomNav extends StatelessWidget {
     final location = GoRouterState.of(context).matchedLocation;
 
     int currentIndex = _items.indexWhere(
-      (item) => item.$3 == '/'
-          ? location == '/'
-          : location.startsWith(item.$3),
+      (item) => item.$3 == '/' ? location == '/' : location.startsWith(item.$3),
     );
     if (currentIndex == -1) currentIndex = 0;
 
@@ -34,8 +32,9 @@ class ShellBottomNav extends StatelessWidget {
         type: BottomNavigationBarType.fixed,
         selectedItemColor: AppColors.indigo600,
         unselectedItemColor: AppColors.slate400,
-        selectedLabelStyle:
-            AppTypography.body10.copyWith(fontWeight: FontWeight.w500),
+        selectedLabelStyle: AppTypography.body10.copyWith(
+          fontWeight: FontWeight.w500,
+        ),
         unselectedLabelStyle: AppTypography.body10,
         backgroundColor: AppColors.white,
         elevation: 0,

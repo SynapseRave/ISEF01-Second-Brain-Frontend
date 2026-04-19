@@ -15,10 +15,14 @@ class _NavItem {
 }
 
 const _navItems = [
-  _NavItem(icon: Icons.grid_view_rounded,   label: 'Dashboard',    route: '/'),
-  _NavItem(icon: Icons.search_rounded,       label: 'Suche',        route: '/search'),
-  _NavItem(icon: Icons.history_rounded,      label: 'Historie',     route: '/history'),
-  _NavItem(icon: Icons.settings_outlined,    label: 'Einstellungen', route: '/settings'),
+  _NavItem(icon: Icons.grid_view_rounded, label: 'Dashboard', route: '/'),
+  _NavItem(icon: Icons.search_rounded, label: 'Suche', route: '/search'),
+  _NavItem(icon: Icons.history_rounded, label: 'Historie', route: '/history'),
+  _NavItem(
+    icon: Icons.settings_outlined,
+    label: 'Einstellungen',
+    route: '/settings',
+  ),
 ];
 
 /// Seitliche Navigationsleiste für Desktop (≥ 1024 px).
@@ -34,8 +38,8 @@ class ShellSidebar extends StatelessWidget {
   final bool collapsed;
   final VoidCallback onToggleCollapse;
 
-  static const double _expandedWidth  = 240;
-  static const double _collapsedWidth =  72;
+  static const double _expandedWidth = 240;
+  static const double _collapsedWidth = 72;
 
   @override
   Widget build(BuildContext context) {
@@ -62,10 +66,7 @@ class ShellSidebar extends StatelessWidget {
               child: Column(
                 children: [
                   ..._navItems.map(
-                    (item) => _NavTile(
-                      item: item,
-                      collapsed: collapsed,
-                    ),
+                    (item) => _NavTile(item: item, collapsed: collapsed),
                   ),
                   const SizedBox(height: AppSpacing.px16),
                   _ServiceSection(collapsed: collapsed),
@@ -73,10 +74,7 @@ class ShellSidebar extends StatelessWidget {
               ),
             ),
           ),
-          _CollapseButton(
-            collapsed: collapsed,
-            onTap: onToggleCollapse,
-          ),
+          _CollapseButton(collapsed: collapsed, onTap: onToggleCollapse),
         ],
       ),
     );
@@ -93,7 +91,10 @@ class _Logo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.fromLTRB(
-        AppSpacing.px16, AppSpacing.px20, AppSpacing.px16, AppSpacing.px12,
+        AppSpacing.px16,
+        AppSpacing.px20,
+        AppSpacing.px16,
+        AppSpacing.px12,
       ),
       child: Row(
         children: [
@@ -104,8 +105,11 @@ class _Logo extends StatelessWidget {
               gradient: AppColors.brandGradient,
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
             ),
-            child: const Icon(Icons.psychology_rounded,
-                color: AppColors.white, size: 20),
+            child: const Icon(
+              Icons.psychology_rounded,
+              color: AppColors.white,
+              size: 20,
+            ),
           ),
           if (!collapsed) ...[
             const SizedBox(width: AppSpacing.px10),
@@ -122,8 +126,9 @@ class _Logo extends StatelessWidget {
                   ),
                   Text(
                     'Multi-App Interface',
-                    style: AppTypography.body10
-                        .copyWith(color: AppColors.slate400),
+                    style: AppTypography.body10.copyWith(
+                      color: AppColors.slate400,
+                    ),
                   ),
                 ],
               ),
@@ -194,9 +199,7 @@ class _SidebarTile extends StatelessWidget {
             vertical: AppSpacing.px10,
           ),
           decoration: BoxDecoration(
-            color: isActive
-                ? AppColors.indigo600
-                : Colors.transparent,
+            color: isActive ? AppColors.indigo600 : Colors.transparent,
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           ),
           child: Row(
@@ -233,10 +236,10 @@ class _ServiceSection extends StatelessWidget {
   final bool collapsed;
 
   static const _services = [
-    (ServiceType.notion,   ConnectionStatus.connected),
-    (ServiceType.todoist,  ConnectionStatus.connected),
+    (ServiceType.notion, ConnectionStatus.connected),
+    (ServiceType.todoist, ConnectionStatus.connected),
     (ServiceType.obsidian, ConnectionStatus.connected),
-    (ServiceType.oneNote,  ConnectionStatus.error),
+    (ServiceType.oneNote, ConnectionStatus.error),
     (ServiceType.kalender, ConnectionStatus.connected),
   ];
 
@@ -248,7 +251,10 @@ class _ServiceSection extends StatelessWidget {
         if (!collapsed)
           Padding(
             padding: const EdgeInsets.fromLTRB(
-              AppSpacing.px12, 0, AppSpacing.px12, AppSpacing.px8,
+              AppSpacing.px12,
+              0,
+              AppSpacing.px12,
+              AppSpacing.px8,
             ),
             child: Text(
               'DIENSTE',
@@ -260,11 +266,8 @@ class _ServiceSection extends StatelessWidget {
             ),
           ),
         ..._services.map(
-          (s) => _ServiceTile(
-            service: s.$1,
-            status: s.$2,
-            collapsed: collapsed,
-          ),
+          (s) =>
+              _ServiceTile(service: s.$1, status: s.$2, collapsed: collapsed),
         ),
       ],
     );
@@ -283,10 +286,10 @@ class _ServiceTile extends StatelessWidget {
   final bool collapsed;
 
   static const _labels = {
-    ServiceType.notion:   'Notion',
-    ServiceType.todoist:  'Todoist',
+    ServiceType.notion: 'Notion',
+    ServiceType.todoist: 'Todoist',
     ServiceType.obsidian: 'Obsidian',
-    ServiceType.oneNote:  'OneNote',
+    ServiceType.oneNote: 'OneNote',
     ServiceType.kalender: 'Kalender',
   };
 
@@ -294,16 +297,16 @@ class _ServiceTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final label = _labels[service]!;
     final statusIcon = switch (status) {
-      ConnectionStatus.connected    => Icons.wifi_rounded,
+      ConnectionStatus.connected => Icons.wifi_rounded,
       ConnectionStatus.disconnected => Icons.wifi_off_rounded,
-      ConnectionStatus.error        => Icons.error_outline_rounded,
-      ConnectionStatus.connecting   => Icons.sync_rounded,
+      ConnectionStatus.error => Icons.error_outline_rounded,
+      ConnectionStatus.connecting => Icons.sync_rounded,
     };
     final statusColor = switch (status) {
-      ConnectionStatus.connected    => AppColors.success,
+      ConnectionStatus.connected => AppColors.success,
       ConnectionStatus.disconnected => AppColors.slate500,
-      ConnectionStatus.error        => AppColors.error,
-      ConnectionStatus.connecting   => AppColors.warning,
+      ConnectionStatus.error => AppColors.error,
+      ConnectionStatus.connecting => AppColors.warning,
     };
 
     return Padding(
@@ -326,8 +329,9 @@ class _ServiceTile extends StatelessWidget {
                   Expanded(
                     child: Text(
                       label,
-                      style: AppTypography.bodySm
-                          .copyWith(color: AppColors.slate300),
+                      style: AppTypography.bodySm.copyWith(
+                        color: AppColors.slate300,
+                      ),
                     ),
                   ),
                   Icon(statusIcon, size: 14, color: statusColor),
@@ -376,8 +380,9 @@ class _CollapseButton extends StatelessWidget {
                 const SizedBox(width: AppSpacing.px10),
                 Text(
                   'Einklappen',
-                  style: AppTypography.bodySm
-                      .copyWith(color: AppColors.slate400),
+                  style: AppTypography.bodySm.copyWith(
+                    color: AppColors.slate400,
+                  ),
                 ),
               ],
             ],

@@ -16,10 +16,10 @@ class ServiceBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (label, letter, bg) = switch (service) {
-      ServiceType.notion   => ('Notion',   'N', AppColors.notion),
-      ServiceType.todoist  => ('Todoist',  'T', AppColors.todoist),
+      ServiceType.notion => ('Notion', 'N', AppColors.notion),
+      ServiceType.todoist => ('Todoist', 'T', AppColors.todoist),
       ServiceType.obsidian => ('Obsidian', 'O', AppColors.obsidian),
-      ServiceType.oneNote  => ('OneNote',  'O', AppColors.oneNote),
+      ServiceType.oneNote => ('OneNote', 'O', AppColors.oneNote),
       ServiceType.kalender => ('Kalender', 'K', AppColors.kalender),
     };
 
@@ -73,10 +73,10 @@ class ServiceAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (letter, bg) = switch (service) {
-      ServiceType.notion   => ('N', AppColors.notion),
-      ServiceType.todoist  => ('T', AppColors.todoist),
+      ServiceType.notion => ('N', AppColors.notion),
+      ServiceType.todoist => ('T', AppColors.todoist),
       ServiceType.obsidian => ('O', AppColors.obsidian),
-      ServiceType.oneNote  => ('O', AppColors.oneNote),
+      ServiceType.oneNote => ('O', AppColors.oneNote),
       ServiceType.kalender => ('K', AppColors.kalender),
     };
 
@@ -113,10 +113,10 @@ class PriorityBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (label, dotColor, bg) = switch (priority) {
-      Priority.high   => ('Hoch',   AppColors.error,   AppColors.errorLight),
-      Priority.medium => ('Mittel', AppColors.warning,  AppColors.warningLight),
-      Priority.low    => ('Niedrig', AppColors.info,   AppColors.infoLight),
-      Priority.none   => ('Keine',  AppColors.slate400, AppColors.slate100),
+      Priority.high => ('Hoch', AppColors.error, AppColors.errorLight),
+      Priority.medium => ('Mittel', AppColors.warning, AppColors.warningLight),
+      Priority.low => ('Niedrig', AppColors.info, AppColors.infoLight),
+      Priority.none => ('Keine', AppColors.slate400, AppColors.slate100),
     };
 
     return Container(
@@ -134,10 +134,7 @@ class PriorityBadge extends StatelessWidget {
           Container(
             width: 6,
             height: 6,
-            decoration: BoxDecoration(
-              color: dotColor,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: dotColor, shape: BoxShape.circle),
           ),
           const SizedBox(width: AppSpacing.px4),
           Text(
@@ -166,14 +163,30 @@ class ConnectionStatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (label, icon, textColor, bg) = switch (status) {
-      ConnectionStatus.connected =>
-        ('Verbunden',   Icons.check_circle_outline, AppColors.success, AppColors.successLight),
-      ConnectionStatus.disconnected =>
-        ('Getrennt',    Icons.wifi_off,              AppColors.slate500, AppColors.slate100),
-      ConnectionStatus.error =>
-        ('Fehler',      Icons.error_outline,         AppColors.error,   AppColors.errorLight),
-      ConnectionStatus.connecting =>
-        ('Verbindet...', Icons.sync,                 AppColors.warning,  AppColors.warningLight),
+      ConnectionStatus.connected => (
+        'Verbunden',
+        Icons.check_circle_outline,
+        AppColors.success,
+        AppColors.successLight,
+      ),
+      ConnectionStatus.disconnected => (
+        'Getrennt',
+        Icons.wifi_off,
+        AppColors.slate500,
+        AppColors.slate100,
+      ),
+      ConnectionStatus.error => (
+        'Fehler',
+        Icons.error_outline,
+        AppColors.error,
+        AppColors.errorLight,
+      ),
+      ConnectionStatus.connecting => (
+        'Verbindet...',
+        Icons.sync,
+        AppColors.warning,
+        AppColors.warningLight,
+      ),
     };
 
     return Container(
@@ -250,9 +263,19 @@ class LiveStatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (label, icon, textColor, bg) = switch (status) {
-      LiveStatus.now    => ('Jetzt',     null,              AppColors.white,   AppColors.info),
-      LiveStatus.soon   => ('Gleich',    null,              AppColors.warning,  AppColors.warningLight),
-      LiveStatus.pinned => ('Angepinnt', Icons.push_pin,   AppColors.violet600, AppColors.slate100),
+      LiveStatus.now => ('Jetzt', null, AppColors.white, AppColors.info),
+      LiveStatus.soon => (
+        'Gleich',
+        null,
+        AppColors.warning,
+        AppColors.warningLight,
+      ),
+      LiveStatus.pinned => (
+        'Angepinnt',
+        Icons.push_pin,
+        AppColors.violet600,
+        AppColors.slate100,
+      ),
     };
 
     return Container(
@@ -283,4 +306,3 @@ class LiveStatusBadge extends StatelessWidget {
     );
   }
 }
-
