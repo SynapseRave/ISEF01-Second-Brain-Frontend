@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:isef01_second_brain_frontend/core/auth/auth_cubit.dart';
 import 'package:isef01_second_brain_frontend/core/design_system/design_system.dart';
 
 /// Navigations-Einträge der Sidebar.
@@ -74,6 +76,7 @@ class ShellSidebar extends StatelessWidget {
               ),
             ),
           ),
+          _LogoutButton(collapsed: collapsed),
           _CollapseButton(collapsed: collapsed, onTap: onToggleCollapse),
         ],
       ),
@@ -335,6 +338,54 @@ class _ServiceTile extends StatelessWidget {
                     ),
                   ),
                   Icon(statusIcon, size: 14, color: statusColor),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Logout Button ─────────────────────────────────────────────────────────────
+
+class _LogoutButton extends StatelessWidget {
+  const _LogoutButton({required this.collapsed});
+  final bool collapsed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.px8,
+        vertical: AppSpacing.px4,
+      ),
+      child: Tooltip(
+        message: collapsed ? 'Abmelden' : '',
+        child: InkWell(
+          onTap: () => context.read<AuthCubit>().logout(),
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.px12,
+              vertical: AppSpacing.px10,
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.logout_rounded,
+                  size: 18,
+                  color: AppColors.slate400,
+                ),
+                if (!collapsed) ...[
+                  const SizedBox(width: AppSpacing.px10),
+                  Text(
+                    'Abmelden',
+                    style: AppTypography.bodySm.copyWith(
+                      color: AppColors.slate400,
+                    ),
+                  ),
                 ],
               ],
             ),

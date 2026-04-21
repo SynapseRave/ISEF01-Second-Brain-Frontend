@@ -30,6 +30,14 @@ abstract final class AppConfig {
     defaultValue: 'frontend',
   );
 
+  /// Redirect-URI die nach dem Keycloak-Login aufgerufen wird.
+  /// Muss exakt so in Keycloak als "Valid Redirect URI" eingetragen sein.
+  /// Dev-Start: flutter run -d chrome --web-port=3000
+  static const redirectUri = String.fromEnvironment(
+    'REDIRECT_URI',
+    defaultValue: 'http://localhost:3000',
+  );
+
   /// true wenn die App im Debug-Modus läuft (flutter run, nicht flutter build).
   static const isDebug = bool.fromEnvironment(
     'dart.vm.product',

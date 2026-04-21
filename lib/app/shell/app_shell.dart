@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isef01_second_brain_frontend/app/shell/widgets/shell_bottom_nav.dart';
 import 'package:isef01_second_brain_frontend/app/shell/widgets/shell_sidebar.dart';
+import 'package:isef01_second_brain_frontend/core/auth/auth_cubit.dart';
 import 'package:isef01_second_brain_frontend/core/design_system/design_system.dart';
 
 /// Persistente App-Shell mit responsivem Layout.
@@ -83,6 +85,18 @@ class _MobileLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout_rounded, color: AppColors.slate400),
+            tooltip: 'Abmelden',
+            onPressed: () => context.read<AuthCubit>().logout(),
+          ),
+        ],
+      ),
       body: child,
       bottomNavigationBar: const ShellBottomNav(),
     );
