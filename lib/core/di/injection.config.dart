@@ -19,6 +19,15 @@ import '../auth/auth_interceptor.dart' as _i53;
 import '../auth/auth_repository.dart' as _i778;
 import '../auth/auth_repository_impl.dart' as _i790;
 import '../auth/refresh_interceptor.dart' as _i312;
+import '../../features/chat/data/datasources/chat_remote_datasource.dart'
+    as _i2001;
+import '../../features/chat/data/repositories/chat_repository_impl.dart'
+    as _i2002;
+import '../../features/chat/domain/repositories/chat_repository.dart'
+    as _i2003;
+import '../../features/chat/domain/usecases/send_message_usecase.dart'
+    as _i2004;
+import '../../features/chat/presentation/bloc/chat_cubit.dart' as _i2005;
 import '../../features/settings/data/datasources/settings_remote_datasource.dart'
     as _i944;
 import '../../features/settings/data/oauth/google_calendar_oauth_connector.dart'
@@ -72,6 +81,18 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i53.AuthInterceptor>(),
         gh<_i312.RefreshInterceptor>(),
       ),
+    );
+    gh.lazySingleton<_i2001.ChatRemoteDatasource>(
+      () => _i2001.ChatRemoteDatasourceImpl(gh<_i778.AuthRepository>()),
+    );
+    gh.lazySingleton<_i2003.ChatRepository>(
+      () => _i2002.ChatRepositoryImpl(gh<_i2001.ChatRemoteDatasource>()),
+    );
+    gh.lazySingleton<_i2004.SendMessageUseCase>(
+      () => _i2004.SendMessageUseCase(gh<_i2003.ChatRepository>()),
+    );
+    gh.factory<_i2005.ChatCubit>(
+      () => _i2005.ChatCubit(gh<_i2004.SendMessageUseCase>()),
     );
     gh.lazySingleton<_i944.SettingsRemoteDatasource>(
       () => _i944.SettingsRemoteDatasourceImpl(gh<_i361.Dio>()),

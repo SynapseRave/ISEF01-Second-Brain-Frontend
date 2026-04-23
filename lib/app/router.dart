@@ -9,6 +9,7 @@ import 'package:isef01_second_brain_frontend/features/dashboard/presentation/pag
 import 'package:isef01_second_brain_frontend/features/history/presentation/pages/history_page.dart';
 import 'package:isef01_second_brain_frontend/features/login/presentation/pages/login_page.dart';
 import 'package:isef01_second_brain_frontend/features/search/presentation/pages/search_page.dart';
+import 'package:isef01_second_brain_frontend/features/chat/presentation/bloc/chat_cubit.dart';
 import 'package:isef01_second_brain_frontend/features/settings/domain/entities/service_connection.dart';
 import 'package:isef01_second_brain_frontend/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:isef01_second_brain_frontend/features/settings/presentation/pages/settings_page.dart';
@@ -55,6 +56,7 @@ GoRouter createRouter(AuthCubit authCubit) {
       ShellRoute(
         builder: (context, state, child) => MultiBlocProvider(
           providers: [
+            BlocProvider(create: (_) => sl<ChatCubit>()),
             BlocProvider(
               create: (_) => sl<SettingsCubit>()..loadConnections(),
             ),
