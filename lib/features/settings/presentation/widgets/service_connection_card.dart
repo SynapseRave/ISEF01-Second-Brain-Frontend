@@ -95,7 +95,9 @@ class ServiceConnectionCard extends StatelessWidget {
   static String _labelFor(ServiceType service) => switch (service) {
     ServiceType.googleCalendar => 'Google Calendar',
     ServiceType.oneNote => 'Microsoft OneNote',
-    _ => service.name,
+    ServiceType.notion => 'Notion',
+    ServiceType.todoist => 'Todoist',
+    ServiceType.obsidian => 'Obsidian',
   };
 
   static String _formatDateTime(DateTime value) {

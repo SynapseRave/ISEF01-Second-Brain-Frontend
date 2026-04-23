@@ -39,9 +39,15 @@ GoRouter createRouter(AuthCubit authCubit) {
       final isLoading =
           authCubit.state is AuthInitial || authCubit.state is AuthLoading;
       final isOnLogin = state.matchedLocation == AppRoutes.login;
+      // OAuth-Callback-Seiten tragen ?code=…&state=… in der URL.
+      // Während des Ladens NICHT zu /login umleiten — sonst gehen die
+      // Query-Parameter verloren und der Token-Austausch schlägt fehl.
+      final isServiceCallback =
+          state.uri.path.startsWith('/settings/connect/callback/');
 
-      // Während der Initialisierung keine Umleitung — Login-Seite wartet.
-      if (isLoading) return isOnLogin ? null : AppRoutes.login;
+      if (isLoading) {
+        return (isOnLogin || isServiceCallback) ? null : AppRoutes.login;
+      }
 
       if (!isAuthenticated && !isOnLogin) return AppRoutes.login;
       if (isAuthenticated && isOnLogin) return AppRoutes.dashboard;

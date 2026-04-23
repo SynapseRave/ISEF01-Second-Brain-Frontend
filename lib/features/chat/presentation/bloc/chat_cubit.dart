@@ -59,12 +59,23 @@ class ChatCubit extends Cubit<ChatState> {
 
   void _onEvent(SseEvent event) {
     switch (event) {
+      case SseChunkEvent(:final text):
+        // Einzelner gestreamter Token → live aufaddieren.
+        emit(
+          state.copyWith(
+            streamingContent: state.streamingContent + text,
+            clearStatus: true,
+          ),
+        );
       case SseStatusEvent(:final message):
         emit(state.copyWith(statusMessage: message));
       case SseResultEvent(:final response):
+        // Nur als Fallback nutzen wenn kein Chunk-Streaming stattfand,
+        // damit der vollständige Text nicht doppelt erscheint.
+        if (state.streamingContent.isNotEmpty) break;
         emit(
           state.copyWith(
-            streamingContent: state.streamingContent + response,
+            streamingContent: response,
             clearStatus: true,
           ),
         );
