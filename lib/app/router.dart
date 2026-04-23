@@ -9,8 +9,10 @@ import 'package:isef01_second_brain_frontend/features/dashboard/presentation/pag
 import 'package:isef01_second_brain_frontend/features/history/presentation/pages/history_page.dart';
 import 'package:isef01_second_brain_frontend/features/login/presentation/pages/login_page.dart';
 import 'package:isef01_second_brain_frontend/features/search/presentation/pages/search_page.dart';
+import 'package:isef01_second_brain_frontend/features/settings/domain/entities/service_connection.dart';
 import 'package:isef01_second_brain_frontend/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:isef01_second_brain_frontend/features/settings/presentation/pages/settings_page.dart';
+import 'package:isef01_second_brain_frontend/features/settings/presentation/pages/service_oauth_callback_page.dart';
 import 'package:isef01_second_brain_frontend/features/user/presentation/bloc/user_cubit.dart';
 
 abstract final class AppRoutes {
@@ -19,6 +21,8 @@ abstract final class AppRoutes {
   static const search = '/search';
   static const history = '/history';
   static const settings = '/settings';
+  static const googleCalendarCallback = '/settings/connect/callback/google-calendar';
+  static const oneNoteCallback = '/settings/connect/callback/onenote';
 }
 
 /// Erstellt den konfigurierten GoRouter.
@@ -80,6 +84,20 @@ GoRouter createRouter(AuthCubit authCubit) {
             path: AppRoutes.settings,
             name: 'settings',
             builder: (context, state) => const SettingsPage(),
+          ),
+          GoRoute(
+            path: AppRoutes.googleCalendarCallback,
+            name: 'google-calendar-callback',
+            builder: (context, state) => const ServiceOAuthCallbackPage(
+              service: ServiceType.googleCalendar,
+            ),
+          ),
+          GoRoute(
+            path: AppRoutes.oneNoteCallback,
+            name: 'onenote-callback',
+            builder: (context, state) => const ServiceOAuthCallbackPage(
+              service: ServiceType.oneNote,
+            ),
           ),
         ],
       ),

@@ -47,8 +47,8 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   bool get hasAuthCallback =>
-      Uri.base.queryParameters.containsKey('code') ||
-      Uri.base.queryParameters.containsKey('error');
+      _hasPendingPkce &&
+      (_hasAuthorizationCodeCallback || _hasAuthorizationErrorCallback);
 
   // ── OIDC Discovery ────────────────────────────────────────────────────────
 
@@ -79,10 +79,19 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<AuthFailure?> login() async {
-    final callbackCode = Uri.base.queryParameters['code'];
-    return callbackCode != null
-        ? _exchangeCode(callbackCode)
-        : _redirectToKeycloak();
+    if (_hasPendingPkce) {
+      if (_hasAuthorizationErrorCallback) {
+        _clearPkceState();
+        return AuthFailure(_describeCallbackError(Uri.base));
+      }
+
+      final callbackCode = Uri.base.queryParameters['code'];
+      if (callbackCode != null) {
+        return _exchangeCode(callbackCode);
+      }
+    }
+
+    return _redirectToKeycloak();
   }
 
   Future<AuthFailure?> _redirectToKeycloak() async {
@@ -99,7 +108,7 @@ class AuthRepositoryImpl implements AuthRepository {
           'client_id': AppConfig.keycloakClientId,
           'redirect_uri': AppConfig.redirectUri,
           'response_type': 'code',
-          'scope': 'openid profile email offline_access',
+          'scope': 'openid profile email',
           'state': state,
           'code_challenge': _s256Challenge(verifier),
           'code_challenge_method': 'S256',
@@ -116,14 +125,22 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<AuthFailure?> _exchangeCode(String code) async {
     try {
       final verifier = pkceRead(_pkceVerifierKey);
+      final expectedState = pkceRead(_pkceStateKey);
+      final returnedState = Uri.base.queryParameters['state'];
       if (verifier == null) {
+        _clearPkceState();
         return const AuthFailure(
           'PKCE Code Verifier fehlt — bitte erneut anmelden.',
         );
       }
+      if (expectedState == null || returnedState != expectedState) {
+        _clearPkceState();
+        return const AuthFailure(
+          'Ungültiger Login-Callback — bitte erneut anmelden.',
+        );
+      }
 
-      pkceDelete(_pkceVerifierKey);
-      pkceDelete(_pkceStateKey);
+      _clearPkceState();
 
       final meta = await _getMetadata();
       final response = await http.post(
@@ -159,6 +176,14 @@ class AuthRepositoryImpl implements AuthRepository {
       _authController.add(true);
       return null;
     } catch (e) {
+      final message = e.toString();
+      if (message.contains('XMLHttpRequest error') ||
+          message.contains('Failed to fetch') ||
+          message.contains('ClientException')) {
+        return const AuthFailure(
+          'Token-Austausch mit Keycloak wurde vom Browser blockiert. Bitte Web Origins und Redirect URIs im Keycloak-Client pruefen.',
+        );
+      }
       return AuthFailure('Token-Austausch fehlgeschlagen: $e');
     }
   }
@@ -167,6 +192,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> logout() async {
     _accessToken = null;
     _accessTokenExpiry = null;
+    _clearPkceState();
     await _secureStorage.delete(key: _refreshTokenKey);
     _authController.add(false);
   }
@@ -234,6 +260,34 @@ class AuthRepositoryImpl implements AuthRepository {
   bool _isTokenValid() {
     if (_accessToken == null || _accessTokenExpiry == null) return false;
     return _accessTokenExpiry!.difference(DateTime.now()).inSeconds > 60;
+  }
+
+  bool get _hasPendingPkce =>
+      pkceRead(_pkceVerifierKey) != null || pkceRead(_pkceStateKey) != null;
+
+  bool get _hasAuthorizationCodeCallback =>
+      Uri.base.queryParameters.containsKey('code');
+
+  bool get _hasAuthorizationErrorCallback =>
+      Uri.base.queryParameters.containsKey('error');
+
+  void _clearPkceState() {
+    pkceDelete(_pkceVerifierKey);
+    pkceDelete(_pkceStateKey);
+  }
+
+  String _describeCallbackError(Uri callbackUri) {
+    final description = callbackUri.queryParameters['error_description'];
+    if (description != null && description.isNotEmpty) {
+      return description;
+    }
+
+    final error = callbackUri.queryParameters['error'];
+    if (error != null && error.isNotEmpty) {
+      return error;
+    }
+
+    return 'Login wurde abgebrochen oder ist fehlgeschlagen.';
   }
 
   void dispose() => _authController.close();

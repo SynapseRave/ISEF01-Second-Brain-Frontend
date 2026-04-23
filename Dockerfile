@@ -6,6 +6,12 @@ ARG API_BASE_URL=""
 ARG KEYCLOAK_URL=""
 ARG KEYCLOAK_REALM=""
 ARG KEYCLOAK_CLIENT_ID=""
+ARG REDIRECT_URI=""
+ARG GOOGLE_CALENDAR_CLIENT_ID=""
+ARG GOOGLE_CALENDAR_REDIRECT_URI=""
+ARG MICROSOFT_CLIENT_ID=""
+ARG MICROSOFT_TENANT_ID="common"
+ARG MICROSOFT_REDIRECT_URI=""
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
@@ -38,7 +44,13 @@ RUN flutter build web --release \
     --dart-define=API_BASE_URL=${API_BASE_URL} \
     --dart-define=KEYCLOAK_URL=${KEYCLOAK_URL} \
     --dart-define=KEYCLOAK_REALM=${KEYCLOAK_REALM} \
-    --dart-define=KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
+    --dart-define=KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID} \
+    --dart-define=REDIRECT_URI=${REDIRECT_URI} \
+    --dart-define=GOOGLE_CALENDAR_CLIENT_ID=${GOOGLE_CALENDAR_CLIENT_ID} \
+    --dart-define=GOOGLE_CALENDAR_REDIRECT_URI=${GOOGLE_CALENDAR_REDIRECT_URI} \
+    --dart-define=MICROSOFT_CLIENT_ID=${MICROSOFT_CLIENT_ID} \
+    --dart-define=MICROSOFT_TENANT_ID=${MICROSOFT_TENANT_ID} \
+    --dart-define=MICROSOFT_REDIRECT_URI=${MICROSOFT_REDIRECT_URI}
 
 # Stage 2: Serve with Nginx
 FROM nginx:alpine AS runtime

@@ -38,6 +38,38 @@ abstract final class AppConfig {
     defaultValue: 'http://localhost:3000',
   );
 
+  /// OAuth Client-ID für Google Calendar.
+  static const googleCalendarClientId = String.fromEnvironment(
+    'GOOGLE_CALENDAR_CLIENT_ID',
+    defaultValue: '',
+  );
+
+  /// Optional explizite Redirect-URI für Google Calendar.
+  /// Wenn leer, wird zur Laufzeit aus dem aktuellen Origin abgeleitet.
+  static const googleCalendarRedirectUri = String.fromEnvironment(
+    'GOOGLE_CALENDAR_REDIRECT_URI',
+    defaultValue: '',
+  );
+
+  /// OAuth Client-ID für Microsoft OneNote.
+  static const microsoftClientId = String.fromEnvironment(
+    'MICROSOFT_CLIENT_ID',
+    defaultValue: '',
+  );
+
+  /// Tenant für Microsoft OAuth, z. B. `common`, `organizations` oder Tenant-ID.
+  static const microsoftTenantId = String.fromEnvironment(
+    'MICROSOFT_TENANT_ID',
+    defaultValue: 'common',
+  );
+
+  /// Optional explizite Redirect-URI für Microsoft OneNote.
+  /// Wenn leer, wird zur Laufzeit aus dem aktuellen Origin abgeleitet.
+  static const microsoftRedirectUri = String.fromEnvironment(
+    'MICROSOFT_REDIRECT_URI',
+    defaultValue: '',
+  );
+
   /// true wenn die App im Debug-Modus läuft (flutter run, nicht flutter build).
   static const isDebug = bool.fromEnvironment(
     'dart.vm.product',

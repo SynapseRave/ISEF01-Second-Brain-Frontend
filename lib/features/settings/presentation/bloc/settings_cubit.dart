@@ -1,5 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:isef01_second_brain_frontend/core/error/failure.dart';
+import 'package:isef01_second_brain_frontend/features/settings/data/oauth/google_calendar_oauth_connector.dart';
+import 'package:isef01_second_brain_frontend/features/settings/data/oauth/onenote_oauth_connector.dart';
 import 'package:isef01_second_brain_frontend/features/settings/domain/entities/service_connection.dart';
 import 'package:isef01_second_brain_frontend/features/settings/domain/usecases/connect_service_usecase.dart';
 import 'package:isef01_second_brain_frontend/features/settings/domain/usecases/disconnect_service_usecase.dart';
@@ -12,11 +15,15 @@ class SettingsCubit extends Cubit<SettingsState> {
     this._repository,
     this._connect,
     this._disconnect,
+    this._googleCalendarConnector,
+    this._oneNoteConnector,
   ) : super(const SettingsInitial());
 
   final SettingsRepository _repository;
   final ConnectServiceUseCase _connect;
   final DisconnectServiceUseCase _disconnect;
+  final GoogleCalendarOAuthConnector _googleCalendarConnector;
+  final OneNoteOAuthConnector _oneNoteConnector;
 
   Future<void> loadConnections() async {
     emit(const SettingsLoading());
@@ -28,7 +35,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
   }
 
-  Future<void> storeCredential(
+  Future<Failure?> storeCredential(
     ServiceType service,
     Map<String, dynamic> credentials,
   ) async {
@@ -38,20 +45,79 @@ class SettingsCubit extends Cubit<SettingsState> {
     final failure = await _connect(service, credentials);
     if (failure != null) {
       emit(SettingsError(message: failure.message, connections: current));
+      return failure;
     } else {
       await loadConnections();
+      return null;
     }
   }
 
-  Future<void> deleteCredential(ServiceType service) async {
+  Future<Failure?> startConnection(ServiceType service) async {
+    final current = _currentConnections;
+    emit(SettingsConnecting(connections: current, activeService: service));
+
+    final failure = await switch (service) {
+      ServiceType.googleCalendar => _googleCalendarConnector.start(),
+      ServiceType.oneNote => _oneNoteConnector.start(),
+      _ => Future.value(
+        const ValidationFailure(
+          'Für diesen Dienst ist noch kein Connect-Flow verfügbar.',
+        ),
+      ),
+    };
+
+    if (failure != null) {
+      emit(SettingsError(message: failure.message, connections: current));
+    }
+    return failure;
+  }
+
+  Future<Failure?> completeConnectionCallback(
+    ServiceType service,
+    Uri callbackUri,
+  ) async {
+    final current = _currentConnections;
+    emit(SettingsConnecting(connections: current, activeService: service));
+
+    final (bundle, oauthFailure) = await switch (service) {
+      ServiceType.googleCalendar => _googleCalendarConnector.complete(
+        callbackUri,
+      ),
+      ServiceType.oneNote => _oneNoteConnector.complete(callbackUri),
+      _ => Future.value((
+        null,
+        const ValidationFailure(
+          'Für diesen Dienst ist noch kein Connect-Flow verfügbar.',
+        ),
+      )),
+    };
+
+    if (oauthFailure != null) {
+      emit(SettingsError(message: oauthFailure.message, connections: current));
+      return oauthFailure;
+    }
+
+    final storeFailure = await _connect(service, bundle!.toJson());
+    if (storeFailure != null) {
+      emit(SettingsError(message: storeFailure.message, connections: current));
+      return storeFailure;
+    }
+
+    await loadConnections();
+    return null;
+  }
+
+  Future<Failure?> deleteCredential(ServiceType service) async {
     final current = _currentConnections;
     emit(SettingsConnecting(connections: current, activeService: service));
 
     final failure = await _disconnect(service);
     if (failure != null) {
       emit(SettingsError(message: failure.message, connections: current));
+      return failure;
     } else {
       await loadConnections();
+      return null;
     }
   }
 

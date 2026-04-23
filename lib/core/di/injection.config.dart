@@ -19,6 +19,29 @@ import '../auth/auth_interceptor.dart' as _i53;
 import '../auth/auth_repository.dart' as _i778;
 import '../auth/auth_repository_impl.dart' as _i790;
 import '../auth/refresh_interceptor.dart' as _i312;
+import '../../features/settings/data/datasources/settings_remote_datasource.dart'
+    as _i944;
+import '../../features/settings/data/oauth/google_calendar_oauth_connector.dart'
+    as _i1740;
+import '../../features/settings/data/oauth/onenote_oauth_connector.dart'
+    as _i877;
+import '../../features/settings/data/repositories/settings_repository_impl.dart'
+    as _i943;
+import '../../features/settings/domain/repositories/settings_repository.dart'
+    as _i1049;
+import '../../features/settings/domain/usecases/connect_service_usecase.dart'
+    as _i519;
+import '../../features/settings/domain/usecases/disconnect_service_usecase.dart'
+    as _i159;
+import '../../features/settings/presentation/bloc/settings_cubit.dart' as _i346;
+import '../../features/user/data/datasources/user_remote_datasource.dart'
+    as _i759;
+import '../../features/user/data/repositories/user_repository_impl.dart'
+    as _i477;
+import '../../features/user/domain/repositories/user_repository.dart' as _i110;
+import '../../features/user/domain/usecases/get_user_usecase.dart' as _i710;
+import '../../features/user/domain/usecases/update_user_usecase.dart' as _i1041;
+import '../../features/user/presentation/bloc/user_cubit.dart' as _i305;
 import 'app_module.dart' as _i460;
 
 extension GetItInjectableX on _i174.GetIt {
@@ -48,6 +71,51 @@ extension GetItInjectableX on _i174.GetIt {
       () => appModule.dio(
         gh<_i53.AuthInterceptor>(),
         gh<_i312.RefreshInterceptor>(),
+      ),
+    );
+    gh.lazySingleton<_i944.SettingsRemoteDatasource>(
+      () => _i944.SettingsRemoteDatasourceImpl(gh<_i361.Dio>()),
+    );
+    gh.lazySingleton<_i1049.SettingsRepository>(
+      () => _i943.SettingsRepositoryImpl(gh<_i944.SettingsRemoteDatasource>()),
+    );
+    gh.lazySingleton<_i519.ConnectServiceUseCase>(
+      () => _i519.ConnectServiceUseCase(gh<_i1049.SettingsRepository>()),
+    );
+    gh.lazySingleton<_i159.DisconnectServiceUseCase>(
+      () => _i159.DisconnectServiceUseCase(gh<_i1049.SettingsRepository>()),
+    );
+    gh.lazySingleton<_i1740.GoogleCalendarOAuthConnector>(
+      () => _i1740.GoogleCalendarOAuthConnector(),
+    );
+    gh.lazySingleton<_i877.OneNoteOAuthConnector>(
+      () => _i877.OneNoteOAuthConnector(),
+    );
+    gh.lazySingleton<_i346.SettingsCubit>(
+      () => _i346.SettingsCubit(
+        gh<_i1049.SettingsRepository>(),
+        gh<_i519.ConnectServiceUseCase>(),
+        gh<_i159.DisconnectServiceUseCase>(),
+        gh<_i1740.GoogleCalendarOAuthConnector>(),
+        gh<_i877.OneNoteOAuthConnector>(),
+      ),
+    );
+    gh.lazySingleton<_i759.UserRemoteDatasource>(
+      () => _i759.UserRemoteDatasourceImpl(gh<_i361.Dio>()),
+    );
+    gh.lazySingleton<_i110.UserRepository>(
+      () => _i477.UserRepositoryImpl(gh<_i759.UserRemoteDatasource>()),
+    );
+    gh.lazySingleton<_i710.GetUserUseCase>(
+      () => _i710.GetUserUseCase(gh<_i110.UserRepository>()),
+    );
+    gh.lazySingleton<_i1041.UpdateUserUseCase>(
+      () => _i1041.UpdateUserUseCase(gh<_i110.UserRepository>()),
+    );
+    gh.lazySingleton<_i305.UserCubit>(
+      () => _i305.UserCubit(
+        gh<_i710.GetUserUseCase>(),
+        gh<_i1041.UpdateUserUseCase>(),
       ),
     );
     return this;

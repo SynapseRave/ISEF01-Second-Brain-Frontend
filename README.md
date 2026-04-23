@@ -67,10 +67,15 @@ Konfiguration wird per `--dart-define` übergeben. Standardwerte für die lokale
 | Variable           | Default                    | Beschreibung                        |
 |--------------------|----------------------------|-------------------------------------|
 | `API_BASE_URL`     | `http://localhost:8080`    | Backend-URL                         |
-| `KEYCLOAK_URL`     | `http://localhost:8180`    | Keycloak-Server-URL                 |
+| `KEYCLOAK_URL`     | `http://localhost:8080`    | Keycloak-Server-URL                 |
 | `KEYCLOAK_REALM`   | `second-brain`             | Realm-Name                          |
 | `KEYCLOAK_CLIENT_ID` | `frontend`               | Client-ID in Keycloak               |
 | `REDIRECT_URI`     | `http://localhost:3000`    | OAuth2 Callback-URL nach dem Login  |
+| `GOOGLE_CALENDAR_CLIENT_ID` | `""`             | OAuth Client-ID für Google Calendar |
+| `GOOGLE_CALENDAR_REDIRECT_URI` | `""`          | Optional explizite Google Redirect-URI |
+| `MICROSOFT_CLIENT_ID` | `""`                    | OAuth Client-ID für Microsoft       |
+| `MICROSOFT_TENANT_ID` | `common`                | Microsoft Tenant oder `common`      |
+| `MICROSOFT_REDIRECT_URI` | `""`                 | Optional explizite Microsoft Redirect-URI |
 
 Beispiel mit eigenen Werten:
 
@@ -78,6 +83,20 @@ Beispiel mit eigenen Werten:
 flutter run -d chrome --web-port=3000 \
   --dart-define=API_BASE_URL=http://mein-backend:8080
 ```
+
+Wichtig fuer Web-Login mit Keycloak:
+
+- Im Client `frontend` muessen `Valid Redirect URIs` mindestens `http://localhost:3000` und `http://localhost:3000/*` enthalten.
+- Unter `Web Origins` muss `http://localhost:3000` erlaubt sein.
+- Wenn Keycloak den Realm aus `keycloak/realm-export.json` bereits frueher importiert hat, greifen spaetere JSON-Aenderungen nicht automatisch. Dann den Realm neu importieren oder den Client im Keycloak-Admin-UI manuell anpassen.
+
+Fuer Google Calendar und OneNote:
+
+- Die Frontend-App braucht die jeweiligen OAuth-Client-IDs als `dart-define`, sonst erscheint die Meldung, dass die ID fehlt.
+- Bei Docker-Deployments kommen diese Werte ueber `docker-compose.yml` in den Web-Build. Aendere sie z. B. in einer `.env`.
+- Die Redirect-URIs muessen in Google Cloud bzw. Azure exakt zu den Callback-Routen passen:
+  - Google: `http://localhost:3000/settings/connect/callback/google-calendar`
+  - Microsoft: `http://localhost:3000/settings/connect/callback/onenote`
 
 ---
 
