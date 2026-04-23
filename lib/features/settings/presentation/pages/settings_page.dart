@@ -5,14 +5,25 @@ import 'package:isef01_second_brain_frontend/core/widgets/app_loading_indicator.
 import 'package:isef01_second_brain_frontend/features/settings/domain/entities/service_connection.dart';
 import 'package:isef01_second_brain_frontend/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:isef01_second_brain_frontend/features/settings/presentation/bloc/settings_state.dart';
+import 'package:isef01_second_brain_frontend/features/settings/presentation/widgets/api_key_input_dialog.dart';
 import 'package:isef01_second_brain_frontend/features/settings/presentation/widgets/service_connection_card.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
+  /// OAuth-basierte Dienste öffnen den Browser-Flow.
+  static const _oauthServices = {
+    ServiceType.googleCalendar,
+    ServiceType.oneNote,
+  };
+
+  /// Alle unterstützten Dienste in Anzeigereihenfolge.
   static const _supportedServices = [
     ServiceType.googleCalendar,
     ServiceType.oneNote,
+    ServiceType.notion,
+    ServiceType.todoist,
+    ServiceType.obsidian,
   ];
 
   @override
@@ -60,7 +71,8 @@ class SettingsPage extends StatelessWidget {
                     Text('Integrationen', style: AppTypography.h2),
                     const SizedBox(height: AppSpacing.px8),
                     Text(
-                      'Verbinde Google Calendar und Microsoft OneNote, damit das Backend die gespeicherten Tokens später für MCP-Aufrufe nutzen kann.',
+                      'Verbinde deine Dienste, damit der AI Assistent auf Kalender, '
+                      'Notizen und Aufgaben zugreifen kann.',
                       style: AppTypography.bodyBase.copyWith(
                         color: AppColors.slate500,
                       ),
@@ -75,14 +87,14 @@ class SettingsPage extends StatelessWidget {
                           connection: connection,
                           description: _descriptionFor(service),
                           isBusy: activeService == service,
-                          onConnect: () =>
-                              context.read<SettingsCubit>().startConnection(service),
+                          onConnect: () => _onConnect(context, service),
                           onDisconnect: () async {
                             final confirmed = await AppConfirmDialog.show(
                               context,
                               title: '${_labelFor(service)} trennen',
                               message:
-                                  'Die gespeicherten Credentials werden im Backend entfernt. Der Dienst muss danach neu verbunden werden.',
+                                  'Die gespeicherten Credentials werden im Backend entfernt. '
+                                  'Der Dienst muss danach neu verbunden werden.',
                               confirmLabel: 'Trennen',
                               cancelLabel: 'Abbrechen',
                             );
@@ -113,6 +125,33 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
+  /// Verbindungsflow starten — OAuth für Calendar/OneNote, Dialog für die anderen.
+  Future<void> _onConnect(BuildContext context, ServiceType service) async {
+    if (_oauthServices.contains(service)) {
+      context.read<SettingsCubit>().startConnection(service);
+      return;
+    }
+
+    // API-Key-Dienst: Dialog öffnen und Credentials einsammeln
+    final credentials = await ApiKeyInputDialog.show(context, service);
+    if (credentials == null || credentials.isEmpty) return;
+    if (!context.mounted) return;
+
+    final failure = await context
+        .read<SettingsCubit>()
+        .storeCredential(service, credentials);
+
+    if (failure == null && context.mounted) {
+      AppToast.show(
+        context,
+        message: '${_labelFor(service)} wurde erfolgreich verbunden.',
+        type: ToastType.success,
+      );
+    }
+  }
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+
   static List<ServiceConnection> _connectionsFrom(SettingsState state) =>
       switch (state) {
         SettingsLoaded(:final connections) => connections,
@@ -137,14 +176,26 @@ class SettingsPage extends StatelessWidget {
   static String _labelFor(ServiceType service) => switch (service) {
     ServiceType.googleCalendar => 'Google Calendar',
     ServiceType.oneNote => 'Microsoft OneNote',
-    _ => service.name,
+    ServiceType.notion => 'Notion',
+    ServiceType.todoist => 'Todoist',
+    ServiceType.obsidian => 'Obsidian',
   };
 
   static String _descriptionFor(ServiceType service) => switch (service) {
     ServiceType.googleCalendar =>
-      'Erlaubt den Zugriff auf Google-Kalendertermine und speichert Access- und Refresh-Token im Backend.',
+      'Zugriff auf Google-Kalendertermine. '
+      'Access- und Refresh-Token werden sicher im Backend gespeichert.',
     ServiceType.oneNote =>
-      'Erlaubt den Zugriff auf OneNote-Notizbücher über Microsoft Graph und speichert Access- und Refresh-Token im Backend.',
-    _ => '',
+      'Zugriff auf OneNote-Notizbücher über Microsoft Graph. '
+      'Access- und Refresh-Token werden sicher im Backend gespeichert.',
+    ServiceType.notion =>
+      'Zugriff auf Notion-Seiten und Datenbanken. '
+      'Benötigt einen Notion Integration Token (Settings → My integrations).',
+    ServiceType.todoist =>
+      'Zugriff auf Todoist-Aufgaben und Projekte. '
+      'Benötigt den API Token aus den Todoist-Einstellungen unter Integrationen.',
+    ServiceType.obsidian =>
+      'Zugriff auf dein lokales Obsidian-Vault über das Local REST API Plugin. '
+      'Das Plugin muss in Obsidian installiert und aktiviert sein.',
   };
 }
