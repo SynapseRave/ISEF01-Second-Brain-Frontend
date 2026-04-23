@@ -4,11 +4,11 @@ import 'package:isef01_second_brain_frontend/features/settings/domain/entities/s
 import 'package:isef01_second_brain_frontend/features/settings/domain/repositories/settings_repository.dart';
 
 @lazySingleton
-class ConnectServiceUseCase {
-  const ConnectServiceUseCase(this._repository);
+class DisconnectServiceUseCase {
+  const DisconnectServiceUseCase(this._repository);
 
   final SettingsRepository _repository;
 
-  Future<Failure?> call(ServiceType service, Map<String, dynamic> credentials) =>
-      _repository.storeCredential(service, credentials);
+  Future<Failure?> call(ServiceType service) =>
+      _repository.deleteCredential(service);
 }

@@ -1,9 +1,11 @@
 import 'package:isef01_second_brain_frontend/core/error/failure.dart';
-import 'package:isef01_second_brain_frontend/features/history/domain/entities/history_entry.dart';
+import 'package:isef01_second_brain_frontend/features/history/domain/entities/paginated_history.dart';
 
 abstract interface class HistoryRepository {
-  Future<({List<HistoryEntry> entries, Failure? failure})> getHistory({
+  Future<(PaginatedHistory?, Failure?)> getHistory({
     int page = 1,
+    int pageSize = 20,
   });
-  Future<Failure?> deleteEntry(String id);
+
+  Future<Failure?> deleteEntry(int id);
 }

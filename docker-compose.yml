@@ -1,32 +1,18 @@
 services:
-  # Keycloak — nur für lokale Entwicklung.
-  # Admin-UI: http://localhost:8180  (admin / admin)
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.2
-    command: start-dev --import-realm
-    environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
-    ports:
-      - "8180:8080"
-    restart: unless-stopped
-    volumes:
-      - ./keycloak:/opt/keycloak/data/import
-      - keycloak_data:/opt/keycloak/data
+  # Keycloak wird vom Backend-Stack bereitgestellt (ISEF01-Second-Brain-Backend).
+  # Keycloak-Admin-UI: http://localhost:8080  (admin / admin)
+  # Kein eigener Keycloak-Container mehr — Frontend nutzt die Backend-Instanz.
 
   frontend:
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        API_BASE_URL: ${API_BASE_URL:-http://localhost:8080}
-        KEYCLOAK_URL: ${KEYCLOAK_URL:-http://localhost:8180}
+        API_BASE_URL: ${API_BASE_URL:-http://localhost:8000}
+        KEYCLOAK_URL: ${KEYCLOAK_URL:-http://localhost:8080}
         KEYCLOAK_REALM: ${KEYCLOAK_REALM:-second-brain}
         KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-frontend}
         REDIRECT_URI: ${REDIRECT_URI:-http://localhost:3000}
     ports:
       - "3000:80"
     restart: unless-stopped
-
-volumes:
-  keycloak_data:

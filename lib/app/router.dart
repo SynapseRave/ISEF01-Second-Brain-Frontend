@@ -1,13 +1,17 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isef01_second_brain_frontend/app/shell/app_shell.dart';
 import 'package:isef01_second_brain_frontend/core/auth/auth_cubit.dart';
 import 'package:isef01_second_brain_frontend/core/auth/auth_state.dart';
+import 'package:isef01_second_brain_frontend/core/di/injection.dart';
 import 'package:isef01_second_brain_frontend/core/utils/go_router_refresh_stream.dart';
 import 'package:isef01_second_brain_frontend/features/dashboard/presentation/pages/dashboard_page.dart';
 import 'package:isef01_second_brain_frontend/features/history/presentation/pages/history_page.dart';
 import 'package:isef01_second_brain_frontend/features/login/presentation/pages/login_page.dart';
 import 'package:isef01_second_brain_frontend/features/search/presentation/pages/search_page.dart';
+import 'package:isef01_second_brain_frontend/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:isef01_second_brain_frontend/features/settings/presentation/pages/settings_page.dart';
+import 'package:isef01_second_brain_frontend/features/user/presentation/bloc/user_cubit.dart';
 
 abstract final class AppRoutes {
   static const login = '/login';
@@ -45,7 +49,17 @@ GoRouter createRouter(AuthCubit authCubit) {
         builder: (context, state) => const LoginPage(),
       ),
       ShellRoute(
-        builder: (context, state, child) => AppShell(child: child),
+        builder: (context, state, child) => MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (_) => sl<SettingsCubit>()..loadConnections(),
+            ),
+            BlocProvider(
+              create: (_) => sl<UserCubit>()..loadUser(),
+            ),
+          ],
+          child: AppShell(child: child),
+        ),
         routes: [
           GoRoute(
             path: AppRoutes.dashboard,

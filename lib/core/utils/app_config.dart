@@ -6,16 +6,16 @@
 /// Niemals Secrets oder URLs hardcoden — immer über diese Klasse.
 abstract final class AppConfig {
   /// Basis-URL des Second Brain Backends.
-  /// Beispiel: http://localhost:8080 (dev), https://api.secondbrain.app (prod)
+  /// Beispiel: http://localhost:8000 (dev), https://api.secondbrain.app (prod)
   static const apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://localhost:8080',
+    defaultValue: 'http://localhost:8000',
   );
 
-  /// Basis-URL des Keycloak-Servers.
+  /// Basis-URL des Keycloak-Servers (Backend-Instanz, Port 8080).
   static const keycloakUrl = String.fromEnvironment(
     'KEYCLOAK_URL',
-    defaultValue: 'http://localhost:8180',
+    defaultValue: 'http://localhost:8080',
   );
 
   /// Name des Keycloak-Realms.
