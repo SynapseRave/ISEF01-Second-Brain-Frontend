@@ -60,10 +60,7 @@ class OneNoteOAuthConnector {
 
     try {
       if (callbackUri.queryParameters.containsKey('error')) {
-        return (
-          null,
-          AuthFailure(describeOAuthCallbackError(callbackUri)),
-        );
+        return (null, AuthFailure(describeOAuthCallbackError(callbackUri)));
       }
       if (verifier == null || expectedState == null) {
         return (

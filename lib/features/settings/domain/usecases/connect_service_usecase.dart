@@ -9,6 +9,8 @@ class ConnectServiceUseCase {
 
   final SettingsRepository _repository;
 
-  Future<Failure?> call(ServiceType service, Map<String, dynamic> credentials) =>
-      _repository.storeCredential(service, credentials);
+  Future<Failure?> call(
+    ServiceType service,
+    Map<String, dynamic> credentials,
+  ) => _repository.storeCredential(service, credentials);
 }

@@ -17,25 +17,26 @@ sealed class SseEvent {
         'status' => SseStatusEvent(json['message'] as String? ?? ''),
         // Tool-Aufruf-Benachrichtigung → als Status anzeigen.
         'tool_call' => SseStatusEvent(
-            '${json['service'] ?? ''}: ${json['tool'] ?? ''}…',
-          ),
+          '${json['service'] ?? ''}: ${json['tool'] ?? ''}…',
+        ),
         // Vollständige Antwort nach dem Streaming (Fallback & Deep-Link).
         // Wird im Cubit ignoriert wenn bereits Chunks empfangen wurden.
         'result' => SseResultEvent(
-            response: (json['data'] as Map<String, dynamic>?)?['response']
-                    as String? ??
-                '',
-            deepLink: (json['data'] as Map<String, dynamic>?)?['deep_link']
-                as String?,
-          ),
+          response:
+              (json['data'] as Map<String, dynamic>?)?['response'] as String? ??
+              '',
+          deepLink:
+              (json['data'] as Map<String, dynamic>?)?['deep_link'] as String?,
+        ),
         // Stream abgeschlossen. input_id kann int oder UUID-String sein.
         'done' => SseDoneEvent(
-            (json['input_id'] as num?)?.toInt() ??
-                int.tryParse(json['input_id']?.toString() ?? '') ??
-                0,
-          ),
-        'error' =>
-          SseErrorEvent(json['message'] as String? ?? 'Unbekannter Fehler.'),
+          (json['input_id'] as num?)?.toInt() ??
+              int.tryParse(json['input_id']?.toString() ?? '') ??
+              0,
+        ),
+        'error' => SseErrorEvent(
+          json['message'] as String? ?? 'Unbekannter Fehler.',
+        ),
         _ => null,
       };
     } catch (_) {

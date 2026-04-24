@@ -22,7 +22,8 @@ abstract final class AppRoutes {
   static const search = '/search';
   static const history = '/history';
   static const settings = '/settings';
-  static const googleCalendarCallback = '/settings/connect/callback/google-calendar';
+  static const googleCalendarCallback =
+      '/settings/connect/callback/google-calendar';
   static const oneNoteCallback = '/settings/connect/callback/onenote';
 }
 
@@ -42,8 +43,9 @@ GoRouter createRouter(AuthCubit authCubit) {
       // OAuth-Callback-Seiten tragen ?code=…&state=… in der URL.
       // Während des Ladens NICHT zu /login umleiten — sonst gehen die
       // Query-Parameter verloren und der Token-Austausch schlägt fehl.
-      final isServiceCallback =
-          state.uri.path.startsWith('/settings/connect/callback/');
+      final isServiceCallback = state.uri.path.startsWith(
+        '/settings/connect/callback/',
+      );
 
       if (isLoading) {
         return (isOnLogin || isServiceCallback) ? null : AppRoutes.login;
@@ -63,12 +65,8 @@ GoRouter createRouter(AuthCubit authCubit) {
         builder: (context, state, child) => MultiBlocProvider(
           providers: [
             BlocProvider(create: (_) => sl<ChatCubit>()),
-            BlocProvider(
-              create: (_) => sl<SettingsCubit>()..loadConnections(),
-            ),
-            BlocProvider(
-              create: (_) => sl<UserCubit>()..loadUser(),
-            ),
+            BlocProvider(create: (_) => sl<SettingsCubit>()..loadConnections()),
+            BlocProvider(create: (_) => sl<UserCubit>()..loadUser()),
           ],
           child: AppShell(child: child),
         ),
@@ -103,9 +101,8 @@ GoRouter createRouter(AuthCubit authCubit) {
           GoRoute(
             path: AppRoutes.oneNoteCallback,
             name: 'onenote-callback',
-            builder: (context, state) => const ServiceOAuthCallbackPage(
-              service: ServiceType.oneNote,
-            ),
+            builder: (context, state) =>
+                const ServiceOAuthCallbackPage(service: ServiceType.oneNote),
           ),
         ],
       ),

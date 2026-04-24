@@ -32,13 +32,12 @@ final class HistoryLoaded extends HistoryState {
     int? currentPage,
     int? totalPages,
     bool? isLoadingMore,
-  }) =>
-      HistoryLoaded(
-        entries: entries ?? this.entries,
-        currentPage: currentPage ?? this.currentPage,
-        totalPages: totalPages ?? this.totalPages,
-        isLoadingMore: isLoadingMore ?? this.isLoadingMore,
-      );
+  }) => HistoryLoaded(
+    entries: entries ?? this.entries,
+    currentPage: currentPage ?? this.currentPage,
+    totalPages: totalPages ?? this.totalPages,
+    isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+  );
 }
 
 final class HistoryError extends HistoryState {

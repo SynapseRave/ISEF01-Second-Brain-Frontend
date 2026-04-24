@@ -51,7 +51,10 @@ class SettingsRepositoryImpl implements SettingsRepository {
     Map<String, dynamic> credentials,
   ) async {
     try {
-      await _datasource.updateCredential(serviceTypeToString(service), credentials);
+      await _datasource.updateCredential(
+        serviceTypeToString(service),
+        credentials,
+      );
       return null;
     } on DioException catch (e) {
       return mapDioException(e);

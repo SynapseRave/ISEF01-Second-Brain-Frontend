@@ -29,8 +29,9 @@ class UserCubit extends Cubit<UserState> {
   }) async {
     final current = state;
     if (current is! UserLoaded && current is! UserUpdateSuccess) return;
-    final currentData =
-        current is UserLoaded ? current.data : (current as UserUpdateSuccess).data;
+    final currentData = current is UserLoaded
+        ? current.data
+        : (current as UserUpdateSuccess).data;
 
     emit(UserUpdating(currentData));
     final (data, failure) = await _updateUser(

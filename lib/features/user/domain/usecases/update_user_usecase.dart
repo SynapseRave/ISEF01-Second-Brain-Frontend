@@ -14,11 +14,10 @@ class UpdateUserUseCase {
     String? password,
     String? preferredLlm,
     Map<String, dynamic>? defaultTargets,
-  }) =>
-      _repository.updateUser(
-        email: email,
-        password: password,
-        preferredLlm: preferredLlm,
-        defaultTargets: defaultTargets,
-      );
+  }) => _repository.updateUser(
+    email: email,
+    password: password,
+    preferredLlm: preferredLlm,
+    defaultTargets: defaultTargets,
+  );
 }

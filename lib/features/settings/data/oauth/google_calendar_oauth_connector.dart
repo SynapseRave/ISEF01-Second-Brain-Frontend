@@ -67,10 +67,7 @@ class GoogleCalendarOAuthConnector {
 
     try {
       if (callbackUri.queryParameters.containsKey('error')) {
-        return (
-          null,
-          AuthFailure(describeOAuthCallbackError(callbackUri)),
-        );
+        return (null, AuthFailure(describeOAuthCallbackError(callbackUri)));
       }
       if (verifier == null || expectedState == null) {
         return (
@@ -143,10 +140,7 @@ class GoogleCalendarOAuthConnector {
         null,
       );
     } catch (e) {
-      return (
-        null,
-        AuthFailure('Google-Token-Austausch fehlgeschlagen: $e'),
-      );
+      return (null, AuthFailure('Google-Token-Austausch fehlgeschlagen: $e'));
     } finally {
       pkceDelete(_verifierStorageKey);
       pkceDelete(_stateStorageKey);

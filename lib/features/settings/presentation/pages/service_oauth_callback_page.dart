@@ -7,10 +7,7 @@ import 'package:isef01_second_brain_frontend/core/widgets/app_loading_indicator.
 import 'package:isef01_second_brain_frontend/features/settings/presentation/bloc/settings_cubit.dart';
 
 class ServiceOAuthCallbackPage extends StatefulWidget {
-  const ServiceOAuthCallbackPage({
-    super.key,
-    required this.service,
-  });
+  const ServiceOAuthCallbackPage({super.key, required this.service});
 
   final ServiceType service;
 
@@ -31,13 +28,13 @@ class _ServiceOAuthCallbackPageState extends State<ServiceOAuthCallbackPage> {
   }
 
   Future<void> _handleCallback() async {
-    final failure = await context.read<SettingsCubit>().completeConnectionCallback(
-      widget.service,
-      Uri.base,
-    );
+    final failure = await context
+        .read<SettingsCubit>()
+        .completeConnectionCallback(widget.service, Uri.base);
     if (!mounted) return;
 
-    final message = failure?.message ?? '${_labelFor(widget.service)} verbunden.';
+    final message =
+        failure?.message ?? '${_labelFor(widget.service)} verbunden.';
     AppToast.show(
       context,
       message: message,

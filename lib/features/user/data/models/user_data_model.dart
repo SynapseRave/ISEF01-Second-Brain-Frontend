@@ -18,9 +18,7 @@ class UserDataModel {
       settings: UserSettings(
         preferredLlm: settingsJson['preferred_llm'] as String?,
         defaultTargets: settingsJson['default_targets'] != null
-            ? Map<String, dynamic>.from(
-                settingsJson['default_targets'] as Map,
-              )
+            ? Map<String, dynamic>.from(settingsJson['default_targets'] as Map)
             : null,
       ),
     );

@@ -23,8 +23,7 @@ import '../../features/chat/data/datasources/chat_remote_datasource.dart'
     as _i2001;
 import '../../features/chat/data/repositories/chat_repository_impl.dart'
     as _i2002;
-import '../../features/chat/domain/repositories/chat_repository.dart'
-    as _i2003;
+import '../../features/chat/domain/repositories/chat_repository.dart' as _i2003;
 import '../../features/chat/domain/usecases/send_message_usecase.dart'
     as _i2004;
 import '../../features/chat/presentation/bloc/chat_cubit.dart' as _i2005;

@@ -50,11 +50,10 @@ class ChatCubit extends Cubit<ChatState> {
     );
 
     await _subscription?.cancel();
-    _subscription = _sendMessage(prompt, conversationId: conversationId).listen(
-      _onEvent,
-      onError: (_) => _onStreamError(),
-      onDone: _onStreamDone,
-    );
+    _subscription = _sendMessage(
+      prompt,
+      conversationId: conversationId,
+    ).listen(_onEvent, onError: (_) => _onStreamError(), onDone: _onStreamDone);
   }
 
   void _onEvent(SseEvent event) {
@@ -73,12 +72,7 @@ class ChatCubit extends Cubit<ChatState> {
         // Nur als Fallback nutzen wenn kein Chunk-Streaming stattfand,
         // damit der vollständige Text nicht doppelt erscheint.
         if (state.streamingContent.isNotEmpty) break;
-        emit(
-          state.copyWith(
-            streamingContent: response,
-            clearStatus: true,
-          ),
-        );
+        emit(state.copyWith(streamingContent: response, clearStatus: true));
       case SseDoneEvent():
         _finalizeAssistantMessage();
       case SseErrorEvent(:final message):

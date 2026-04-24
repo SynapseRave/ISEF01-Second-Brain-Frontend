@@ -319,9 +319,7 @@ class _UserBubble extends StatelessWidget {
               children: [
                 Text(
                   text,
-                  style: AppTypography.bodySm.copyWith(
-                    color: AppColors.white,
-                  ),
+                  style: AppTypography.bodySm.copyWith(color: AppColors.white),
                 ),
                 const SizedBox(height: AppSpacing.px6),
                 Text(

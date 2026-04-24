@@ -27,12 +27,16 @@ class HistoryCubit extends Cubit<HistoryState> {
 
   Future<void> loadMore() async {
     final current = state;
-    if (current is! HistoryLoaded || !current.hasMore || current.isLoadingMore) {
+    if (current is! HistoryLoaded ||
+        !current.hasMore ||
+        current.isLoadingMore) {
       return;
     }
 
     emit(current.copyWith(isLoadingMore: true));
-    final (data, failure) = await _repository.getHistory(page: current.currentPage + 1);
+    final (data, failure) = await _repository.getHistory(
+      page: current.currentPage + 1,
+    );
     if (failure != null) {
       emit(current.copyWith(isLoadingMore: false));
     } else {

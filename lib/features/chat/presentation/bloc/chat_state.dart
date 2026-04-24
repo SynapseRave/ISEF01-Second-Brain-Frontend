@@ -27,13 +27,14 @@ class ChatState {
     bool clearStatus = false,
     bool clearError = false,
     bool clearStreaming = false,
-  }) =>
-      ChatState(
-        messages: messages ?? this.messages,
-        streamingContent: clearStreaming ? '' : (streamingContent ?? this.streamingContent),
-        isStreaming: isStreaming ?? this.isStreaming,
-        statusMessage: clearStatus ? null : (statusMessage ?? this.statusMessage),
-        error: clearError ? null : (error ?? this.error),
-        conversationId: conversationId ?? this.conversationId,
-      );
+  }) => ChatState(
+    messages: messages ?? this.messages,
+    streamingContent: clearStreaming
+        ? ''
+        : (streamingContent ?? this.streamingContent),
+    isStreaming: isStreaming ?? this.isStreaming,
+    statusMessage: clearStatus ? null : (statusMessage ?? this.statusMessage),
+    error: clearError ? null : (error ?? this.error),
+    conversationId: conversationId ?? this.conversationId,
+  );
 }

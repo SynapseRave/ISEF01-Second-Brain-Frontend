@@ -33,9 +33,7 @@ class ApiKeyInputDialog extends StatefulWidget {
 class _ApiKeyInputDialogState extends State<ApiKeyInputDialog> {
   final _formKey = GlobalKey<FormState>();
   final _tokenController = TextEditingController();
-  final _urlController = TextEditingController(
-    text: 'http://localhost:27123',
-  );
+  final _urlController = TextEditingController(text: 'http://localhost:27123');
 
   bool _obscureToken = true;
 
@@ -50,9 +48,8 @@ class _ApiKeyInputDialogState extends State<ApiKeyInputDialog> {
     if (!_formKey.currentState!.validate()) return;
 
     final credentials = switch (widget.service) {
-      ServiceType.notion || ServiceType.todoist => {
-        'api_token': _tokenController.text.trim(),
-      },
+      ServiceType.notion ||
+      ServiceType.todoist => {'api_token': _tokenController.text.trim()},
       ServiceType.obsidian => {
         'api_key': _tokenController.text.trim(),
         'base_url': _urlController.text.trim().isEmpty
@@ -108,7 +105,10 @@ class _ApiKeyInputDialogState extends State<ApiKeyInputDialog> {
                 const SizedBox(height: AppSpacing.px20),
 
                 // ── Token / API-Key Feld ─────────────────────────────────────
-                Text(_tokenLabelFor(widget.service), style: AppTypography.labelSm),
+                Text(
+                  _tokenLabelFor(widget.service),
+                  style: AppTypography.labelSm,
+                ),
                 const SizedBox(height: AppSpacing.px6),
                 TextFormField(
                   controller: _tokenController,
@@ -177,8 +177,7 @@ class _ApiKeyInputDialogState extends State<ApiKeyInputDialog> {
                       hintStyle: AppTypography.bodySm.copyWith(
                         color: AppColors.slate400,
                       ),
-                      helperText:
-                          'URL des Obsidian Local REST API Plugins',
+                      helperText: 'URL des Obsidian Local REST API Plugins',
                       helperStyle: AppTypography.bodyXs.copyWith(
                         color: AppColors.slate400,
                       ),
@@ -189,11 +188,15 @@ class _ApiKeyInputDialogState extends State<ApiKeyInputDialog> {
                         vertical: AppSpacing.px10,
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                        borderRadius: BorderRadius.circular(
+                          AppSpacing.radiusMd,
+                        ),
                         borderSide: const BorderSide(color: AppColors.slate200),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                        borderRadius: BorderRadius.circular(
+                          AppSpacing.radiusMd,
+                        ),
                         borderSide: const BorderSide(
                           color: AppColors.indigo600,
                           width: 2,
@@ -246,12 +249,10 @@ class _ApiKeyInputDialogState extends State<ApiKeyInputDialog> {
   };
 
   static String _subtitleFor(ServiceType service) => switch (service) {
-    ServiceType.notion =>
-      'Integration Token aus den Notion-Einstellungen',
+    ServiceType.notion => 'Integration Token aus den Notion-Einstellungen',
     ServiceType.todoist =>
       'API Token aus den Todoist-Einstellungen → Integrationen',
-    ServiceType.obsidian =>
-      'API Key des Obsidian Local REST API Plugins',
+    ServiceType.obsidian => 'API Key des Obsidian Local REST API Plugins',
     _ => '',
   };
 

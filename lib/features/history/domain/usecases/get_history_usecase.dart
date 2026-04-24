@@ -6,7 +6,6 @@ class GetHistoryUseCase {
   const GetHistoryUseCase(this._repository);
   final HistoryRepository _repository;
 
-  Future<(PaginatedHistory?, Failure?)> call({
-    int page = 1,
-  }) => _repository.getHistory(page: page);
+  Future<(PaginatedHistory?, Failure?)> call({int page = 1}) =>
+      _repository.getHistory(page: page);
 }

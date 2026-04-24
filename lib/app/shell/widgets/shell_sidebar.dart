@@ -258,14 +258,15 @@ class _ServiceSection extends StatelessWidget {
           SettingsLoaded(:final connections) => connections,
           SettingsConnecting(:final connections) => connections,
           SettingsError(:final connections) => connections ?? [],
-          _ => _fallback
-              .map(
-                (s) => ServiceConnection(
-                  service: s,
-                  status: ConnectionStatus.disconnected,
-                ),
-              )
-              .toList(),
+          _ =>
+            _fallback
+                .map(
+                  (s) => ServiceConnection(
+                    service: s,
+                    status: ConnectionStatus.disconnected,
+                  ),
+                )
+                .toList(),
         };
 
         return Column(

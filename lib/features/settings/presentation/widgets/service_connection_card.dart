@@ -23,7 +23,9 @@ class ServiceConnectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isConnected = connection.status == ConnectionStatus.connected;
-    final effectiveStatus = isBusy ? ConnectionStatus.connecting : connection.status;
+    final effectiveStatus = isBusy
+        ? ConnectionStatus.connecting
+        : connection.status;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.px20),

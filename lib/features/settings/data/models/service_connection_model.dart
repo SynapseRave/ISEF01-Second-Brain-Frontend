@@ -23,7 +23,9 @@ class ServiceConnectionModel {
 
   ServiceConnection toEntity() => ServiceConnection(
     service: _serviceTypeFromString(service),
-    status: configured ? ConnectionStatus.connected : ConnectionStatus.disconnected,
+    status: configured
+        ? ConnectionStatus.connected
+        : ConnectionStatus.disconnected,
     createdAt: createdAt,
     updatedAt: updatedAt,
   );

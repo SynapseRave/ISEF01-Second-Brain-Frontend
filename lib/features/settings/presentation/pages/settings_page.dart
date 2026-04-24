@@ -137,9 +137,10 @@ class SettingsPage extends StatelessWidget {
     if (credentials == null || credentials.isEmpty) return;
     if (!context.mounted) return;
 
-    final failure = await context
-        .read<SettingsCubit>()
-        .storeCredential(service, credentials);
+    final failure = await context.read<SettingsCubit>().storeCredential(
+      service,
+      credentials,
+    );
 
     if (failure == null && context.mounted) {
       AppToast.show(
@@ -184,18 +185,18 @@ class SettingsPage extends StatelessWidget {
   static String _descriptionFor(ServiceType service) => switch (service) {
     ServiceType.googleCalendar =>
       'Zugriff auf Google-Kalendertermine. '
-      'Access- und Refresh-Token werden sicher im Backend gespeichert.',
+          'Access- und Refresh-Token werden sicher im Backend gespeichert.',
     ServiceType.oneNote =>
       'Zugriff auf OneNote-Notizbücher über Microsoft Graph. '
-      'Access- und Refresh-Token werden sicher im Backend gespeichert.',
+          'Access- und Refresh-Token werden sicher im Backend gespeichert.',
     ServiceType.notion =>
       'Zugriff auf Notion-Seiten und Datenbanken. '
-      'Benötigt einen Notion Integration Token (Settings → My integrations).',
+          'Benötigt einen Notion Integration Token (Settings → My integrations).',
     ServiceType.todoist =>
       'Zugriff auf Todoist-Aufgaben und Projekte. '
-      'Benötigt den API Token aus den Todoist-Einstellungen unter Integrationen.',
+          'Benötigt den API Token aus den Todoist-Einstellungen unter Integrationen.',
     ServiceType.obsidian =>
       'Zugriff auf dein lokales Obsidian-Vault über das Local REST API Plugin. '
-      'Das Plugin muss in Obsidian installiert und aktiviert sein.',
+          'Das Plugin muss in Obsidian installiert und aktiviert sein.',
   };
 }

@@ -22,7 +22,11 @@ class ServiceBadge extends StatelessWidget {
       ServiceType.todoist => ('Todoist', 'T', AppColors.todoist),
       ServiceType.obsidian => ('Obsidian', 'O', AppColors.obsidian),
       ServiceType.oneNote => ('OneNote', 'O', AppColors.oneNote),
-      ServiceType.googleCalendar => ('Google Calendar', 'G', AppColors.googleCalendar),
+      ServiceType.googleCalendar => (
+        'Google Calendar',
+        'G',
+        AppColors.googleCalendar,
+      ),
     };
 
     return Container(

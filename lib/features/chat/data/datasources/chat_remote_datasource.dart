@@ -18,10 +18,7 @@ class ChatRemoteDatasourceImpl implements ChatRemoteDatasource {
   final AuthRepository _authRepository;
 
   @override
-  Stream<SseEvent> sendMessage(
-    String prompt, {
-    String? conversationId,
-  }) async* {
+  Stream<SseEvent> sendMessage(String prompt, {String? conversationId}) async* {
     final token = await _authRepository.getAccessToken();
     if (token == null) {
       yield const SseErrorEvent('Nicht authentifiziert.');
@@ -32,14 +29,12 @@ class ChatRemoteDatasourceImpl implements ChatRemoteDatasource {
     if (conversationId case final id?) bodyMap['conversation_id'] = id;
     final body = jsonEncode(bodyMap);
 
-    final request = http.Request(
-      'POST',
-      Uri.parse('${AppConfig.apiBaseUrl}/api/input/'),
-    )
-      ..headers['Authorization'] = 'Bearer $token'
-      ..headers['Content-Type'] = 'application/json'
-      ..headers['Accept'] = 'text/event-stream'
-      ..body = body;
+    final request =
+        http.Request('POST', Uri.parse('${AppConfig.apiBaseUrl}/api/input/'))
+          ..headers['Authorization'] = 'Bearer $token'
+          ..headers['Content-Type'] = 'application/json'
+          ..headers['Accept'] = 'text/event-stream'
+          ..body = body;
 
     final client = http.Client();
     try {

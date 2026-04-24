@@ -17,8 +17,8 @@ Failure mapDioException(DioException e) {
         404 => const NotFoundFailure(),
         409 => const ValidationFailure('Bereits vorhanden.'),
         422 => ValidationFailure(
-            _extractDetail(e.response?.data) ?? 'Ungültige Eingabe.',
-          ),
+          _extractDetail(e.response?.data) ?? 'Ungültige Eingabe.',
+        ),
         _ => const ServerFailure(),
       };
   }

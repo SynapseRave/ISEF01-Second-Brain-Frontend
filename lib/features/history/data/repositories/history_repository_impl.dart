@@ -18,7 +18,10 @@ class HistoryRepositoryImpl implements HistoryRepository {
     int pageSize = 20,
   }) async {
     try {
-      final model = await _datasource.listInputs(page: page, pageSize: pageSize);
+      final model = await _datasource.listInputs(
+        page: page,
+        pageSize: pageSize,
+      );
       return (model.toEntity(), null);
     } on DioException catch (e) {
       return (null, mapDioException(e));
