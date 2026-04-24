@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:isef01_second_brain_frontend/core/design_system/tokens/app_colors.dart';
 import 'package:isef01_second_brain_frontend/core/design_system/tokens/app_spacing.dart';
 import 'package:isef01_second_brain_frontend/core/design_system/tokens/app_typography.dart';
+import 'package:isef01_second_brain_frontend/features/settings/domain/entities/service_connection.dart';
+
+export 'package:isef01_second_brain_frontend/features/settings/domain/entities/service_connection.dart'
+    show ConnectionStatus, ServiceType;
 
 // ── Service Badge ─────────────────────────────────────────────────────────────
-
-enum ServiceType { notion, todoist, obsidian, oneNote, kalender }
 
 /// Farbiges Badge mit Service-Icon-Buchstabe und Name.
 class ServiceBadge extends StatelessWidget {
@@ -20,7 +22,11 @@ class ServiceBadge extends StatelessWidget {
       ServiceType.todoist => ('Todoist', 'T', AppColors.todoist),
       ServiceType.obsidian => ('Obsidian', 'O', AppColors.obsidian),
       ServiceType.oneNote => ('OneNote', 'O', AppColors.oneNote),
-      ServiceType.kalender => ('Kalender', 'K', AppColors.kalender),
+      ServiceType.googleCalendar => (
+        'Google Calendar',
+        'G',
+        AppColors.googleCalendar,
+      ),
     };
 
     return Container(
@@ -77,7 +83,7 @@ class ServiceAvatar extends StatelessWidget {
       ServiceType.todoist => ('T', AppColors.todoist),
       ServiceType.obsidian => ('O', AppColors.obsidian),
       ServiceType.oneNote => ('O', AppColors.oneNote),
-      ServiceType.kalender => ('K', AppColors.kalender),
+      ServiceType.googleCalendar => ('G', AppColors.googleCalendar),
     };
 
     return Container(
@@ -151,8 +157,6 @@ class PriorityBadge extends StatelessWidget {
 }
 
 // ── Connection Status Badge ────────────────────────────────────────────────────
-
-enum ConnectionStatus { connected, disconnected, error, connecting }
 
 /// Badge für den Verbindungsstatus eines Dienstes.
 class ConnectionStatusBadge extends StatelessWidget {

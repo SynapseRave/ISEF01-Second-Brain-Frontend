@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:isef01_second_brain_frontend/core/auth/auth_cubit.dart';
 import 'package:isef01_second_brain_frontend/core/design_system/design_system.dart';
+import 'package:isef01_second_brain_frontend/features/settings/domain/entities/service_connection.dart'
+    show ServiceConnection;
+import 'package:isef01_second_brain_frontend/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:isef01_second_brain_frontend/features/settings/presentation/bloc/settings_state.dart';
 
 /// Navigations-Einträge der Sidebar.
 class _NavItem {
@@ -74,6 +80,7 @@ class ShellSidebar extends StatelessWidget {
               ),
             ),
           ),
+          _LogoutButton(collapsed: collapsed),
           _CollapseButton(collapsed: collapsed, onTap: onToggleCollapse),
         ],
       ),
@@ -235,41 +242,63 @@ class _ServiceSection extends StatelessWidget {
   const _ServiceSection({required this.collapsed});
   final bool collapsed;
 
-  static const _services = [
-    (ServiceType.notion, ConnectionStatus.connected),
-    (ServiceType.todoist, ConnectionStatus.connected),
-    (ServiceType.obsidian, ConnectionStatus.connected),
-    (ServiceType.oneNote, ConnectionStatus.error),
-    (ServiceType.kalender, ConnectionStatus.connected),
+  static const _fallback = [
+    ServiceType.notion,
+    ServiceType.todoist,
+    ServiceType.obsidian,
+    ServiceType.oneNote,
+    ServiceType.googleCalendar,
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (!collapsed)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.px12,
-              0,
-              AppSpacing.px12,
-              AppSpacing.px8,
-            ),
-            child: Text(
-              'DIENSTE',
-              style: AppTypography.body10.copyWith(
-                color: AppColors.slate500,
-                letterSpacing: 0.8,
-                fontWeight: FontWeight.w600,
+    return BlocBuilder<SettingsCubit, SettingsState>(
+      builder: (context, state) {
+        final connections = switch (state) {
+          SettingsLoaded(:final connections) => connections,
+          SettingsConnecting(:final connections) => connections,
+          SettingsError(:final connections) => connections ?? [],
+          _ =>
+            _fallback
+                .map(
+                  (s) => ServiceConnection(
+                    service: s,
+                    status: ConnectionStatus.disconnected,
+                  ),
+                )
+                .toList(),
+        };
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (!collapsed)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.px12,
+                  0,
+                  AppSpacing.px12,
+                  AppSpacing.px8,
+                ),
+                child: Text(
+                  'DIENSTE',
+                  style: AppTypography.body10.copyWith(
+                    color: AppColors.slate500,
+                    letterSpacing: 0.8,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ...connections.map(
+              (c) => _ServiceTile(
+                service: c.service,
+                status: c.status,
+                collapsed: collapsed,
               ),
             ),
-          ),
-        ..._services.map(
-          (s) =>
-              _ServiceTile(service: s.$1, status: s.$2, collapsed: collapsed),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 }
@@ -290,7 +319,7 @@ class _ServiceTile extends StatelessWidget {
     ServiceType.todoist: 'Todoist',
     ServiceType.obsidian: 'Obsidian',
     ServiceType.oneNote: 'OneNote',
-    ServiceType.kalender: 'Kalender',
+    ServiceType.googleCalendar: 'Google Calendar',
   };
 
   @override
@@ -335,6 +364,54 @@ class _ServiceTile extends StatelessWidget {
                     ),
                   ),
                   Icon(statusIcon, size: 14, color: statusColor),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Logout Button ─────────────────────────────────────────────────────────────
+
+class _LogoutButton extends StatelessWidget {
+  const _LogoutButton({required this.collapsed});
+  final bool collapsed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.px8,
+        vertical: AppSpacing.px4,
+      ),
+      child: Tooltip(
+        message: collapsed ? 'Abmelden' : '',
+        child: InkWell(
+          onTap: () => context.read<AuthCubit>().logout(),
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.px12,
+              vertical: AppSpacing.px10,
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.logout_rounded,
+                  size: 18,
+                  color: AppColors.slate400,
+                ),
+                if (!collapsed) ...[
+                  const SizedBox(width: AppSpacing.px10),
+                  Text(
+                    'Abmelden',
+                    style: AppTypography.bodySm.copyWith(
+                      color: AppColors.slate400,
+                    ),
+                  ),
                 ],
               ],
             ),

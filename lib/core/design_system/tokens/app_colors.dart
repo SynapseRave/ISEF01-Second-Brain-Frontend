@@ -38,7 +38,7 @@ abstract final class AppColors {
   static const Color todoist = Color(0xFFDB4035);
   static const Color obsidian = Color(0xFF7C3AED);
   static const Color oneNote = Color(0xFF7719AA);
-  static const Color kalender = Color(0xFF1A73E8);
+  static const Color googleCalendar = Color(0xFF1A73E8);
 
   // ── Surface / Background ─────────────────────────────────────────────────
   static const Color white = Color(0xFFFFFFFF);

@@ -1,0 +1,46 @@
+name: Auto Format
+
+# Runs dart format on every PR to develop/main and pushes any
+# formatting changes back to the source branch automatically.
+# This removes the need for developers to have dart/flutter installed locally.
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  format:
+    name: Apply dart format
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Check out the PR branch so we can push back to it
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Apply dart format
+        run: dart format lib/ test/
+
+      - name: Commit format changes (if any)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add lib/ test/
+          if git diff --staged --quiet; then
+            echo "No formatting changes needed."
+          else
+            git commit -m "chore: apply dart format [skip ci]"
+            git push
+          fi

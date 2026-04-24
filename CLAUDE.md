@@ -191,15 +191,61 @@ Never put secrets in the source code or `.env` files committed to git.
 
 Each integration lives in its own datasource under the relevant feature:
 
-| Service | Auth method | Notes |
+| Service | Auth method | Credentials |
 |---|---|---|
-| Notion | OAuth2 (user token) | REST API v1 |
-| Todoist | OAuth2 | REST API v2 |
-| Obsidian | Local REST plugin | Requires plugin installed |
-| OneNote | Microsoft OAuth2 (MSAL) | MS Graph API |
-| Calendar | Google OAuth2 / CalDAV | TBD |
+| Google Calendar | OAuth2 PKCE (browser redirect) | `access_token`, `refresh_token`, `expires_at` |
+| Microsoft OneNote | OAuth2 PKCE (browser redirect) | `access_token`, `refresh_token`, `expires_at` |
+| Notion | API Token (dialog) | `api_token` |
+| Todoist | API Token (dialog) | `api_token` |
+| Obsidian | Local REST Plugin (dialog) | `api_key`, `base_url` (default: `http://localhost:27123`) |
 
-Connection state per service is managed in `settings` feature. Each service exposes `connect()`, `disconnect()`, and `status` in its repository.
+Connection state per service is managed in `settings` feature via `SettingsCubit`.
+OAuth services open a browser redirect; API-key services use `ApiKeyInputDialog`.
+
+## Current Implementation Status (2026-04-24)
+
+**Done:**
+- Keycloak PKCE login (Authorization Code Flow + S256)
+- OAuth2 flows for Google Calendar and OneNote (PKCE, callback pages)
+- API-Key dialog for Notion, Todoist, Obsidian
+- Chat input wired: Enter key + Send button → `ChatCubit.sendMessage()`
+- Live SSE streaming: chunk events appear token by token
+- Typing indicator, status messages, auto-scroll, disabled input while streaming
+
+**Runtime configuration (dart-defines):**
+```bash
+flutter run -d chrome --web-port=3000 \
+  --dart-define=API_BASE_URL=http://localhost:8000 \
+  --dart-define=KEYCLOAK_URL=http://localhost:8080 \
+  --dart-define=KEYCLOAK_REALM=second-brain \
+  --dart-define=KEYCLOAK_CLIENT_ID=frontend \
+  --dart-define=GOOGLE_CALENDAR_CLIENT_ID=<your-client-id> \
+  --dart-define=MICROSOFT_CLIENT_ID=<your-client-id> \
+  --dart-define=MICROSOFT_TENANT_ID=common
+```
+
+## SSE Event Protocol
+
+The backend (`POST /api/input/`) streams these event types in order:
+
+| Type | Frontend class | Behaviour |
+|---|---|---|
+| `status` | `SseStatusEvent` | Status line in chat (e.g. "LLM wird angefragt...") |
+| `tool_call` | `SseStatusEvent` | Shown as "service: tool…" status |
+| `chunk` | `SseChunkEvent` | Appended live to `streamingContent` |
+| `result` | `SseResultEvent` | **Ignored** if chunks were already received (fallback only) |
+| `done` | `SseDoneEvent` | Finalises assistant message (`input_id` is a UUID string) |
+| `error` | `SseErrorEvent` | Shows error, stops streaming |
+
+## Architecture Notes
+
+**DI container:** `injection.config.dart` is generated code but committed and manually
+maintained when `build_runner` is unavailable. Chat feature classes use aliases `_i2001+`.
+Run `flutter pub run build_runner build` to regenerate properly.
+
+**OAuth callback routing:** `/settings/connect/callback/*` routes are exempt from the
+`AuthLoading → /login` redirect in `router.dart`. This preserves `?code=` and `?state=`
+query params across the app reload that happens after the OAuth provider redirect.
 
 ---
 

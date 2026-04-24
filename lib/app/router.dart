@@ -1,59 +1,111 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isef01_second_brain_frontend/app/shell/app_shell.dart';
+import 'package:isef01_second_brain_frontend/core/auth/auth_cubit.dart';
+import 'package:isef01_second_brain_frontend/core/auth/auth_state.dart';
+import 'package:isef01_second_brain_frontend/core/di/injection.dart';
+import 'package:isef01_second_brain_frontend/core/utils/go_router_refresh_stream.dart';
 import 'package:isef01_second_brain_frontend/features/dashboard/presentation/pages/dashboard_page.dart';
 import 'package:isef01_second_brain_frontend/features/history/presentation/pages/history_page.dart';
+import 'package:isef01_second_brain_frontend/features/login/presentation/pages/login_page.dart';
 import 'package:isef01_second_brain_frontend/features/search/presentation/pages/search_page.dart';
+import 'package:isef01_second_brain_frontend/features/chat/presentation/bloc/chat_cubit.dart';
+import 'package:isef01_second_brain_frontend/features/settings/domain/entities/service_connection.dart';
+import 'package:isef01_second_brain_frontend/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:isef01_second_brain_frontend/features/settings/presentation/pages/settings_page.dart';
+import 'package:isef01_second_brain_frontend/features/settings/presentation/pages/service_oauth_callback_page.dart';
+import 'package:isef01_second_brain_frontend/features/user/presentation/bloc/user_cubit.dart';
 
-/// Named-Route-Konstanten — als einzige Referenz in der gesamten App nutzen.
 abstract final class AppRoutes {
+  static const login = '/login';
   static const dashboard = '/';
   static const search = '/search';
   static const history = '/history';
   static const settings = '/settings';
+  static const googleCalendarCallback =
+      '/settings/connect/callback/google-calendar';
+  static const oneNoteCallback = '/settings/connect/callback/onenote';
 }
 
-/// Zentrale Router-Konfiguration mit GoRouter.
-///
-/// Alle Seiten liegen innerhalb eines [ShellRoute], der die [AppShell]
-/// (Sidebar + Chat-Overlay) persistent hält.
-///
-/// Route Guards: Platzhalter — `redirect` wird in Phase 2 mit [AuthCubit]
-/// ausgebaut; bis dahin sind alle Routen offen.
-final appRouter = GoRouter(
-  initialLocation: AppRoutes.dashboard,
-  debugLogDiagnostics: false,
-  // ignore: avoid_types_on_closure_parameters
-  redirect: (context, state) {
-    // Phase 2: Auth-Check hier einfügen.
-    // Beispiel: if (!authCubit.isLoggedIn) return '/login';
-    return null;
-  },
-  routes: [
-    ShellRoute(
-      builder: (context, state, child) => AppShell(child: child),
-      routes: [
-        GoRoute(
-          path: AppRoutes.dashboard,
-          name: 'dashboard',
-          builder: (context, state) => const DashboardPage(),
+/// Erstellt den konfigurierten GoRouter.
+/// Erhält den [AuthCubit] damit der redirect-Callback auf Auth-Änderungen
+/// reagieren kann (via [GoRouterRefreshStream]).
+GoRouter createRouter(AuthCubit authCubit) {
+  return GoRouter(
+    initialLocation: AppRoutes.dashboard,
+    debugLogDiagnostics: false,
+    refreshListenable: GoRouterRefreshStream(authCubit.stream),
+    redirect: (context, state) {
+      final isAuthenticated = authCubit.state is AuthAuthenticated;
+      final isLoading =
+          authCubit.state is AuthInitial || authCubit.state is AuthLoading;
+      final isOnLogin = state.matchedLocation == AppRoutes.login;
+      // OAuth-Callback-Seiten tragen ?code=…&state=… in der URL.
+      // Während des Ladens NICHT zu /login umleiten — sonst gehen die
+      // Query-Parameter verloren und der Token-Austausch schlägt fehl.
+      final isServiceCallback = state.uri.path.startsWith(
+        '/settings/connect/callback/',
+      );
+
+      if (isLoading) {
+        return (isOnLogin || isServiceCallback) ? null : AppRoutes.login;
+      }
+
+      if (!isAuthenticated && !isOnLogin) return AppRoutes.login;
+      if (isAuthenticated && isOnLogin) return AppRoutes.dashboard;
+      return null;
+    },
+    routes: [
+      GoRoute(
+        path: AppRoutes.login,
+        name: 'login',
+        builder: (context, state) => const LoginPage(),
+      ),
+      ShellRoute(
+        builder: (context, state, child) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => sl<ChatCubit>()),
+            BlocProvider(create: (_) => sl<SettingsCubit>()..loadConnections()),
+            BlocProvider(create: (_) => sl<UserCubit>()..loadUser()),
+          ],
+          child: AppShell(child: child),
         ),
-        GoRoute(
-          path: AppRoutes.search,
-          name: 'search',
-          builder: (context, state) => const SearchPage(),
-        ),
-        GoRoute(
-          path: AppRoutes.history,
-          name: 'history',
-          builder: (context, state) => const HistoryPage(),
-        ),
-        GoRoute(
-          path: AppRoutes.settings,
-          name: 'settings',
-          builder: (context, state) => const SettingsPage(),
-        ),
-      ],
-    ),
-  ],
-);
+        routes: [
+          GoRoute(
+            path: AppRoutes.dashboard,
+            name: 'dashboard',
+            builder: (context, state) => const DashboardPage(),
+          ),
+          GoRoute(
+            path: AppRoutes.search,
+            name: 'search',
+            builder: (context, state) => const SearchPage(),
+          ),
+          GoRoute(
+            path: AppRoutes.history,
+            name: 'history',
+            builder: (context, state) => const HistoryPage(),
+          ),
+          GoRoute(
+            path: AppRoutes.settings,
+            name: 'settings',
+            builder: (context, state) => const SettingsPage(),
+          ),
+          GoRoute(
+            path: AppRoutes.googleCalendarCallback,
+            name: 'google-calendar-callback',
+            builder: (context, state) => const ServiceOAuthCallbackPage(
+              service: ServiceType.googleCalendar,
+            ),
+          ),
+          GoRoute(
+            path: AppRoutes.oneNoteCallback,
+            name: 'onenote-callback',
+            builder: (context, state) =>
+                const ServiceOAuthCallbackPage(service: ServiceType.oneNote),
+          ),
+        ],
+      ),
+    ],
+  );
+}

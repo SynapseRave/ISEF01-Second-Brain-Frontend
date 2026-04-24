@@ -98,20 +98,22 @@
 
 ### Anforderung: Authentifizierung & Session-Handling (Keycloak)
 
-- [ ] `flutter_appauth` für Authorization Code Flow + PKCE integrieren
-- [ ] `AuthRepository` + `AuthCubit` anlegen
-- [ ] Login Flow: Redirect zu Keycloak → Callback → Token speichern
-- [ ] Token-Handling:
-  - [ ] Access Token nur im Memory halten
-  - [ ] Refresh Token in `flutter_secure_storage`
-  - [ ] Silent Refresh: Timer-basiert vor Ablauf (z. B. 60 s vor Expiry)
-- [ ] Dio `AuthInterceptor`: Bearer Token an jeden Request anhängen
-- [ ] Dio `RefreshInterceptor`: 401 → silent refresh → Request wiederholen
-- [ ] Route Guards via `GoRouter redirect`: alle geschützten Routen prüfen `AuthCubit`
-- [ ] Logout Flow: Token revoken → lokalen State leeren → Redirect zu Login
-- [ ] Fehlerzustände UX:
-  - [ ] Abgelaufene Session → Toast + Redirect zu Login
-  - [ ] Fehlende Rollen → `AppErrorView` mit Erklärung
+- [x] `flutter_appauth` für Authorization Code Flow + PKCE integrieren
+  > **Abweichung:** `flutter_appauth` wurde nicht verwendet — es nutzt native Method Channels und ist nicht web-kompatibel. Ersetzt durch manuelles PKCE mit `openid_client` (nur für OIDC-Discovery), `crypto` (SHA-256 Challenge) und `http` (Token-Austausch). PKCE-Zwischenwerte werden in `window.sessionStorage` statt `flutter_secure_storage` gespeichert, da Letzteres den Encryption-Key nach einem Browser-Redirect verliert.
+- [x] `AuthRepository` + `AuthCubit` anlegen
+- [x] Login Flow: Redirect zu Keycloak → Callback → Token speichern
+- [x] Token-Handling:
+  - [x] Access Token nur im Memory halten
+  - [x] Refresh Token in `flutter_secure_storage`
+  - [x] Silent Refresh: Timer-basiert vor Ablauf (z. B. 60 s vor Expiry)
+- [x] Dio `AuthInterceptor`: Bearer Token an jeden Request anhängen
+- [x] Dio `RefreshInterceptor`: 401 → silent refresh → Request wiederholen
+- [x] Route Guards via `GoRouter redirect`: alle geschützten Routen prüfen `AuthCubit`
+- [x] Logout Flow: Token revoken → lokalen State leeren → Redirect zu Login
+  > **Abweichung:** Keycloaks serverseitiger Token-Revoke-Endpoint (`/protocol/openid-connect/revoke`) wird nicht aufgerufen. Der Refresh Token wird nur lokal gelöscht. Für lokale Entwicklung ausreichend; für Production sollte der Endpoint ergänzt werden.
+- [x] Fehlerzustände UX:
+  - [x] Abgelaufene Session → Toast + Redirect zu Login
+  - [-] Fehlende Rollen → `AppErrorView` mit Erklärung *(zurückgestellt — Keycloak-Rollen erst wenn Backend-Daten verfügbar sind)*
 
 ---
 
