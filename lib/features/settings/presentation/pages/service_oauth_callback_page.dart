@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:isef01_second_brain_frontend/app/router.dart';
 import 'package:isef01_second_brain_frontend/core/design_system/design_system.dart';
 import 'package:isef01_second_brain_frontend/core/widgets/app_loading_indicator.dart';
-import 'package:isef01_second_brain_frontend/features/settings/domain/entities/service_connection.dart';
 import 'package:isef01_second_brain_frontend/features/settings/presentation/bloc/settings_cubit.dart';
 
 class ServiceOAuthCallbackPage extends StatefulWidget {

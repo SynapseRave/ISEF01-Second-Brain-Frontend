@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:isef01_second_brain_frontend/core/design_system/design_system.dart';
-import 'package:isef01_second_brain_frontend/features/settings/domain/entities/service_connection.dart';
 
 /// Dialog zur Eingabe von API-Keys / Tokens für Dienste ohne OAuth-Flow.
 ///

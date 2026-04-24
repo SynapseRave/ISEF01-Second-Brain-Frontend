@@ -33,10 +33,10 @@ class UserRepositoryImpl implements UserRepository {
   }) async {
     try {
       final body = <String, dynamic>{
-        if (email case final email?) 'email': email,
-        if (password case final password?) 'password': password,
-        if (preferredLlm case final preferredLlm?) 'preferred_llm': preferredLlm,
-        if (defaultTargets case final defaultTargets?) 'default_targets': defaultTargets,
+        ?'email': email,
+        ?'password': password,
+        ?'preferred_llm': preferredLlm,
+        ?'default_targets': defaultTargets,
       };
       final model = await _datasource.updateUser(body);
       return (model.toEntity(), null);

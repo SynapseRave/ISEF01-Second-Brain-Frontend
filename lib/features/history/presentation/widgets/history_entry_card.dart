@@ -8,7 +8,7 @@ class HistoryEntryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Card(
     child: ListTile(
-      title: Text(entry.input, maxLines: 1, overflow: TextOverflow.ellipsis),
+      title: Text(entry.prompt, maxLines: 1, overflow: TextOverflow.ellipsis),
       subtitle: Text(entry.createdAt.toLocal().toString()),
     ),
   );

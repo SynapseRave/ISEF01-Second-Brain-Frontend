@@ -130,7 +130,7 @@ class _MessageAreaState extends State<_MessageArea> {
       listenWhen: (prev, curr) =>
           prev.messages.length != curr.messages.length ||
           (curr.isStreaming && prev.streamingContent != curr.streamingContent),
-      listener: (_, __) => _scrollToBottom(),
+      listener: (_, _) => _scrollToBottom(),
       builder: (context, state) {
         if (state.messages.isEmpty && !state.isStreaming) {
           return _buildWelcome(context);
@@ -142,7 +142,7 @@ class _MessageAreaState extends State<_MessageArea> {
               state.messages.length +
               (state.isStreaming ? 1 : 0) +
               (state.statusMessage != null ? 1 : 0),
-          separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.px12),
+          separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.px12),
           itemBuilder: (context, i) {
             final messageCount = state.messages.length;
             final hasStatus = state.statusMessage != null;
