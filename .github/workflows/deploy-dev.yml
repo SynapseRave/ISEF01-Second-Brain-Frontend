@@ -6,7 +6,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build-and-push:
@@ -15,9 +14,16 @@ jobs:
     permissions:
       contents: read
       packages: write
+    outputs:
+      image: ${{ steps.lowercase.outputs.image }}
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Lowercase image name
+        id: lowercase
+        run: |
+          echo "image=$(echo '${{ env.REGISTRY }}/${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -35,8 +41,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev-${{ github.sha }}
+            ${{ steps.lowercase.outputs.image }}:dev
+            ${{ steps.lowercase.outputs.image }}:dev-${{ github.sha }}
           build-args: |
             API_BASE_URL=${{ vars.API_BASE_URL_DEV }}
             KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_DEV }}
@@ -63,14 +69,15 @@ jobs:
 
       - name: Deploy frontend
         run: |
+          IMAGE=${{ needs.build-and-push.outputs.image }}:dev-${{ github.sha }}
           if kubectl get deployment frontend -n secondbrain-dev 2>/dev/null; then
             kubectl set image deployment/frontend \
-              frontend=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev-${{ github.sha }} \
+              frontend=$IMAGE \
               -n secondbrain-dev
           else
             echo "Deployment 'frontend' existiert noch nicht – wird erstellt."
             kubectl create deployment frontend \
-              --image=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev-${{ github.sha }} \
+              --image=$IMAGE \
               --replicas=1 \
               -n secondbrain-dev
             kubectl expose deployment frontend \
