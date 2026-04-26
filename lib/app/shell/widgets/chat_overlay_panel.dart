@@ -140,11 +140,14 @@ class _MessageAreaState extends State<_MessageArea> {
     return BlocConsumer<ChatCubit, ChatState>(
       listenWhen: (prev, curr) =>
           prev.messages.length != curr.messages.length ||
-          (curr.isStreaming && prev.streamingContent != curr.streamingContent) ||
+          (curr.isStreaming &&
+              prev.streamingContent != curr.streamingContent) ||
           (prev.error == null && curr.error != null),
       listener: (_, _) => _scrollToBottom(),
       builder: (context, state) {
-        if (state.messages.isEmpty && !state.isStreaming && state.error == null) {
+        if (state.messages.isEmpty &&
+            !state.isStreaming &&
+            state.error == null) {
           return _buildWelcome(context);
         }
         return ListView.separated(
@@ -161,7 +164,9 @@ class _MessageAreaState extends State<_MessageArea> {
             final hasStatus = state.statusMessage != null;
 
             // Fehler-Bubble am Ende (nur wenn nicht mehr streamend)
-            if (!state.isStreaming && state.error != null && i == messageCount) {
+            if (!state.isStreaming &&
+                state.error != null &&
+                i == messageCount) {
               return _ErrorBubble(message: state.error!);
             }
 
@@ -408,8 +413,11 @@ class _ErrorBubble extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline_rounded,
-              size: 16, color: AppColors.error),
+          const Icon(
+            Icons.error_outline_rounded,
+            size: 16,
+            color: AppColors.error,
+          ),
           const SizedBox(width: AppSpacing.px8),
           Expanded(
             child: Text(
