@@ -32,12 +32,11 @@ class UserRepositoryImpl implements UserRepository {
     Map<String, dynamic>? defaultTargets,
   }) async {
     try {
-      final body = <String, dynamic>{
-        if (email != null) 'email': email,
-        if (password != null) 'password': password,
-        if (preferredLlm != null) 'preferred_llm': preferredLlm,
-        if (defaultTargets != null) 'default_targets': defaultTargets,
-      };
+      final body = <String, dynamic>{};
+      if (email != null) body['email'] = email;
+      if (password != null) body['password'] = password;
+      if (preferredLlm != null) body['preferred_llm'] = preferredLlm;
+      if (defaultTargets != null) body['default_targets'] = defaultTargets;
       final model = await _datasource.updateUser(body);
       return (model.toEntity(), null);
     } on DioException catch (e) {

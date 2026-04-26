@@ -1,0 +1,152 @@
+name: Deploy DEV
+
+on:
+  push:
+    branches: [develop]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    name: Build & push Flutter Docker image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push frontend (DEV)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev-${{ github.sha }}
+          build-args: |
+            API_BASE_URL=${{ vars.API_BASE_URL_DEV }}
+            KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_DEV }}
+            KEYCLOAK_REALM=${{ vars.KEYCLOAK_REALM_DEV }}
+            KEYCLOAK_CLIENT_ID=${{ vars.KEYCLOAK_CLIENT_ID_DEV }}
+          cache-from: type=gha,scope=frontend-dev
+          cache-to: type=gha,mode=max,scope=frontend-dev
+
+  deploy:
+    name: Deploy to secondbrain-dev
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBE_CONFIG_DEV }}" | base64 -d > ~/.kube/config
+          chmod 600 ~/.kube/config
+
+      - name: Deploy frontend
+        run: |
+          if kubectl get deployment frontend -n secondbrain-dev 2>/dev/null; then
+            kubectl set image deployment/frontend \
+              frontend=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev-${{ github.sha }} \
+              -n secondbrain-dev
+          else
+            echo "Deployment 'frontend' existiert noch nicht – wird erstellt."
+            kubectl create deployment frontend \
+              --image=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev-${{ github.sha }} \
+              --replicas=1 \
+              -n secondbrain-dev
+            kubectl expose deployment frontend \
+              --port=80 \
+              --target-port=80 \
+              -n secondbrain-dev
+          fi
+          kubectl rollout status deployment/frontend -n secondbrain-dev --timeout=180s
+
+  verify:
+    name: Verify all connections
+    needs: deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBE_CONFIG_DEV }}" | base64 -d > ~/.kube/config
+          chmod 600 ~/.kube/config
+
+      - name: Verify Frontend (extern)
+        run: |
+          curl -sf --max-time 15 https://app.secondbrain.bathon.business \
+            | grep -q '<html'
+          echo "Frontend OK"
+
+      - name: Verify Backend API erreichbar
+        run: curl -sf --max-time 10 https://api.secondbrain.bathon.business/health
+
+      - name: Verify Keycloak erreichbar
+        run: curl -sf --max-time 10 https://auth.secondbrain.bathon.business/health/live
+
+      - name: Verify Keycloak JWKS – DEV Realm
+        run: |
+          curl -sf --max-time 10 \
+            "https://auth.secondbrain.bathon.business/realms/secondbrain-dev/protocol/openid-connect/certs" \
+            | grep -q '"keys"'
+          echo "Keycloak JWKS OK"
+
+      - name: Verify Grafana erreichbar
+        run: curl -sf --max-time 10 https://grafana.secondbrain.bathon.business/api/health
+
+      - name: Verify PostgreSQL (intern, pg_isready)
+        run: |
+          POSTGRES_POD=$(kubectl get pod -n secondbrain-dev -l app=postgres \
+            -o jsonpath='{.items[0].metadata.name}')
+          kubectl exec -n secondbrain-dev "$POSTGRES_POD" -- \
+            pg_isready -U secondbrain -d secondbrain
+          echo "PostgreSQL OK"
+
+      - name: Verify alle MCP-Services (intern via temporärem Pod)
+        run: |
+          kubectl run verify-mcp-${{ github.run_id }} \
+            --image=curlimages/curl:latest \
+            --restart=Never \
+            --namespace=secondbrain-dev \
+            --command \
+            -- /bin/sh -c "\
+              curl -sf http://mcp-notion.secondbrain-dev.svc.cluster.local:3001/health && \
+              curl -sf http://mcp-todoist.secondbrain-dev.svc.cluster.local:3002/health && \
+              curl -sf http://mcp-google-calendar.secondbrain-dev.svc.cluster.local:3003/health && \
+              curl -sf http://mcp-obsidian.secondbrain-dev.svc.cluster.local:3004/health && \
+              curl -sf http://mcp-onenote.secondbrain-dev.svc.cluster.local:3005/health && \
+              echo 'All MCP services healthy'"
+
+          kubectl wait pod/verify-mcp-${{ github.run_id }} \
+            --for=condition=Succeeded \
+            --timeout=60s \
+            -n secondbrain-dev
+
+          kubectl logs pod/verify-mcp-${{ github.run_id }} -n secondbrain-dev
+
+          kubectl delete pod/verify-mcp-${{ github.run_id }} \
+            -n secondbrain-dev \
+            --ignore-not-found
