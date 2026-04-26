@@ -18,9 +18,7 @@ class SettingsPage extends StatelessWidget {
   };
 
   /// Dienste ohne konfigurierte Client-ID — Button deaktiviert mit Hinweis.
-  static const _disabledServices = {
-    ServiceType.oneNote,
-  };
+  static const _disabledServices = {ServiceType.oneNote};
 
   /// Alle unterstützten Dienste in Anzeigereihenfolge.
   static const _supportedServices = [

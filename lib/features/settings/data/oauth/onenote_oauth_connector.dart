@@ -38,8 +38,7 @@ class OneNoteOAuthConnector {
       pkceWrite(_verifierStorageKey, verifier);
       pkceWrite(_stateStorageKey, state);
 
-      final authUri =
-          Uri.parse(_authorizationEndpoint(tenantId)).replace(
+      final authUri = Uri.parse(_authorizationEndpoint(tenantId)).replace(
         queryParameters: {
           'client_id': clientId,
           'response_type': 'code',

@@ -12,7 +12,6 @@ class OAuthConfigModel extends OAuthConfig {
         googleCalendarClientId:
             (json['google_calendar_client_id'] as String?) ?? '',
         microsoftClientId: (json['microsoft_client_id'] as String?) ?? '',
-        microsoftTenantId:
-            (json['microsoft_tenant_id'] as String?) ?? 'common',
+        microsoftTenantId: (json['microsoft_tenant_id'] as String?) ?? 'common',
       );
 }
