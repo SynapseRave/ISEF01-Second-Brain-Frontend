@@ -129,10 +129,11 @@ class _MessageAreaState extends State<_MessageArea> {
     return BlocConsumer<ChatCubit, ChatState>(
       listenWhen: (prev, curr) =>
           prev.messages.length != curr.messages.length ||
-          (curr.isStreaming && prev.streamingContent != curr.streamingContent),
+          (curr.isStreaming && prev.streamingContent != curr.streamingContent) ||
+          (prev.error == null && curr.error != null),
       listener: (_, _) => _scrollToBottom(),
       builder: (context, state) {
-        if (state.messages.isEmpty && !state.isStreaming) {
+        if (state.messages.isEmpty && !state.isStreaming && state.error == null) {
           return _buildWelcome(context);
         }
         return ListView.separated(
@@ -141,11 +142,17 @@ class _MessageAreaState extends State<_MessageArea> {
           itemCount:
               state.messages.length +
               (state.isStreaming ? 1 : 0) +
-              (state.statusMessage != null ? 1 : 0),
+              (state.isStreaming && state.statusMessage != null ? 1 : 0) +
+              (!state.isStreaming && state.error != null ? 1 : 0),
           separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.px12),
           itemBuilder: (context, i) {
             final messageCount = state.messages.length;
             final hasStatus = state.statusMessage != null;
+
+            // Fehler-Bubble am Ende (nur wenn nicht mehr streamend)
+            if (!state.isStreaming && state.error != null && i == messageCount) {
+              return _ErrorBubble(message: state.error!);
+            }
 
             // Status-Zeile direkt vor der Streaming-Bubble
             if (state.isStreaming && hasStatus && i == messageCount) {
@@ -370,6 +377,39 @@ class _TypingIndicator extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _ErrorBubble extends StatelessWidget {
+  const _ErrorBubble({required this.message});
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.px12,
+        vertical: AppSpacing.px10,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.errorLight,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        border: Border.all(color: AppColors.error),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.error_outline_rounded,
+              size: 16, color: AppColors.error),
+          const SizedBox(width: AppSpacing.px8),
+          Expanded(
+            child: Text(
+              message,
+              style: AppTypography.bodySm.copyWith(color: AppColors.error),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
