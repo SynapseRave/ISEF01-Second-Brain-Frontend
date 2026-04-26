@@ -48,6 +48,7 @@ jobs:
             KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_DEV }}
             KEYCLOAK_REALM=${{ vars.KEYCLOAK_REALM_DEV }}
             KEYCLOAK_CLIENT_ID=${{ vars.KEYCLOAK_CLIENT_ID_DEV }}
+            REDIRECT_URI=https://app.secondbrain.bathon.business
           cache-from: type=gha,scope=frontend-dev
           cache-to: type=gha,mode=max,scope=frontend-dev
 
