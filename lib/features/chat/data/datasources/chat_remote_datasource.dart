@@ -63,6 +63,8 @@ class ChatRemoteDatasourceImpl implements ChatRemoteDatasource {
         }
         buffer.write(content);
       }
+    } catch (e) {
+      yield SseErrorEvent('Verbindungsfehler: Server nicht erreichbar.');
     } finally {
       client.close();
     }
