@@ -9,20 +9,26 @@ import 'package:isef01_second_brain_frontend/core/auth/platform/pkce_storage_stu
     if (dart.library.js_interop) 'package:isef01_second_brain_frontend/core/auth/platform/pkce_storage_web.dart';
 import 'package:isef01_second_brain_frontend/core/error/failure.dart';
 import 'package:isef01_second_brain_frontend/core/utils/app_config.dart';
+import 'package:isef01_second_brain_frontend/features/settings/data/datasources/config_remote_datasource.dart';
 import 'package:isef01_second_brain_frontend/features/settings/data/oauth/oauth_pkce.dart';
 import 'package:isef01_second_brain_frontend/features/settings/domain/entities/oauth_credential_bundle.dart';
 
 @lazySingleton
 class OneNoteOAuthConnector {
+  const OneNoteOAuthConnector(this._configDs);
+
+  final ConfigRemoteDatasource _configDs;
+
   static const _serviceKey = 'onenote';
   static const _scopes = 'offline_access openid profile Notes.ReadWrite';
   static const _verifierStorageKey = '${_serviceKey}_pkce_verifier';
   static const _stateStorageKey = '${_serviceKey}_oauth_state';
 
   Future<Failure?> start() async {
-    if (AppConfig.microsoftClientId.isEmpty) {
+    final (clientId, tenantId) = await _resolveClientConfig();
+    if (clientId.isEmpty) {
       return const ValidationFailure(
-        'MICROSOFT_CLIENT_ID fehlt in den dart-defines.',
+        'MICROSOFT_CLIENT_ID ist weder im Backend noch in den dart-defines konfiguriert.',
       );
     }
 
@@ -32,9 +38,9 @@ class OneNoteOAuthConnector {
       pkceWrite(_verifierStorageKey, verifier);
       pkceWrite(_stateStorageKey, state);
 
-      final authUri = Uri.parse(_authorizationEndpoint).replace(
+      final authUri = Uri.parse(_authorizationEndpoint(tenantId)).replace(
         queryParameters: {
-          'client_id': AppConfig.microsoftClientId,
+          'client_id': clientId,
           'response_type': 'code',
           'redirect_uri': _redirectUri,
           'response_mode': 'query',
@@ -87,11 +93,13 @@ class OneNoteOAuthConnector {
         );
       }
 
+      final (clientId, tenantId) = await _resolveClientConfig();
+
       final response = await http.post(
-        Uri.parse(_tokenEndpoint),
+        Uri.parse(_tokenEndpoint(tenantId)),
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: {
-          'client_id': AppConfig.microsoftClientId,
+          'client_id': clientId,
           'grant_type': 'authorization_code',
           'code': code,
           'redirect_uri': _redirectUri,
@@ -144,11 +152,25 @@ class OneNoteOAuthConnector {
     }
   }
 
-  String get _authorizationEndpoint =>
-      'https://login.microsoftonline.com/${AppConfig.microsoftTenantId}/oauth2/v2.0/authorize';
+  /// Fetches client ID and tenant ID from the backend at runtime.
+  /// Falls back to dart-define values for local development.
+  Future<(String clientId, String tenantId)> _resolveClientConfig() async {
+    try {
+      final config = await _configDs.getOAuthConfig();
+      if (config.microsoftClientId.isNotEmpty) {
+        return (config.microsoftClientId, config.microsoftTenantId);
+      }
+    } catch (_) {
+      // ignore — fall through to dart-define fallback
+    }
+    return (AppConfig.microsoftClientId, AppConfig.microsoftTenantId);
+  }
 
-  String get _tokenEndpoint =>
-      'https://login.microsoftonline.com/${AppConfig.microsoftTenantId}/oauth2/v2.0/token';
+  String _authorizationEndpoint(String tenantId) =>
+      'https://login.microsoftonline.com/$tenantId/oauth2/v2.0/authorize';
+
+  String _tokenEndpoint(String tenantId) =>
+      'https://login.microsoftonline.com/$tenantId/oauth2/v2.0/token';
 
   String get _redirectUri {
     if (AppConfig.microsoftRedirectUri.isNotEmpty) {

@@ -27,6 +27,8 @@ import '../../features/chat/domain/repositories/chat_repository.dart' as _i2003;
 import '../../features/chat/domain/usecases/send_message_usecase.dart'
     as _i2004;
 import '../../features/chat/presentation/bloc/chat_cubit.dart' as _i2005;
+import '../../features/settings/data/datasources/config_remote_datasource.dart'
+    as _i620;
 import '../../features/settings/data/datasources/settings_remote_datasource.dart'
     as _i944;
 import '../../features/settings/data/oauth/google_calendar_oauth_connector.dart'
@@ -93,6 +95,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i2005.ChatCubit>(
       () => _i2005.ChatCubit(gh<_i2004.SendMessageUseCase>()),
     );
+    gh.lazySingleton<_i620.ConfigRemoteDatasource>(
+      () => _i620.ConfigRemoteDatasourceImpl(gh<_i361.Dio>()),
+    );
     gh.lazySingleton<_i944.SettingsRemoteDatasource>(
       () => _i944.SettingsRemoteDatasourceImpl(gh<_i361.Dio>()),
     );
@@ -106,10 +111,12 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i159.DisconnectServiceUseCase(gh<_i1049.SettingsRepository>()),
     );
     gh.lazySingleton<_i1740.GoogleCalendarOAuthConnector>(
-      () => _i1740.GoogleCalendarOAuthConnector(),
+      () => _i1740.GoogleCalendarOAuthConnector(
+        gh<_i620.ConfigRemoteDatasource>(),
+      ),
     );
     gh.lazySingleton<_i877.OneNoteOAuthConnector>(
-      () => _i877.OneNoteOAuthConnector(),
+      () => _i877.OneNoteOAuthConnector(gh<_i620.ConfigRemoteDatasource>()),
     );
     gh.lazySingleton<_i346.SettingsCubit>(
       () => _i346.SettingsCubit(

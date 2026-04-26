@@ -9,11 +9,16 @@ import 'package:isef01_second_brain_frontend/core/auth/platform/pkce_storage_stu
     if (dart.library.js_interop) 'package:isef01_second_brain_frontend/core/auth/platform/pkce_storage_web.dart';
 import 'package:isef01_second_brain_frontend/core/error/failure.dart';
 import 'package:isef01_second_brain_frontend/core/utils/app_config.dart';
+import 'package:isef01_second_brain_frontend/features/settings/data/datasources/config_remote_datasource.dart';
 import 'package:isef01_second_brain_frontend/features/settings/data/oauth/oauth_pkce.dart';
 import 'package:isef01_second_brain_frontend/features/settings/domain/entities/oauth_credential_bundle.dart';
 
 @lazySingleton
 class GoogleCalendarOAuthConnector {
+  const GoogleCalendarOAuthConnector(this._configDs);
+
+  final ConfigRemoteDatasource _configDs;
+
   static const _serviceKey = 'google_calendar';
   static const _authorizationEndpoint =
       'https://accounts.google.com/o/oauth2/v2/auth';
@@ -23,9 +28,10 @@ class GoogleCalendarOAuthConnector {
   static const _stateStorageKey = '${_serviceKey}_oauth_state';
 
   Future<Failure?> start() async {
-    if (AppConfig.googleCalendarClientId.isEmpty) {
+    final clientId = await _resolveClientId();
+    if (clientId.isEmpty) {
       return const ValidationFailure(
-        'GOOGLE_CALENDAR_CLIENT_ID fehlt in den dart-defines.',
+        'GOOGLE_CALENDAR_CLIENT_ID ist weder im Backend noch in den dart-defines konfiguriert.',
       );
     }
 
@@ -37,7 +43,7 @@ class GoogleCalendarOAuthConnector {
 
       final authUri = Uri.parse(_authorizationEndpoint).replace(
         queryParameters: {
-          'client_id': AppConfig.googleCalendarClientId,
+          'client_id': clientId,
           'redirect_uri': _redirectUri,
           'response_type': 'code',
           'scope': _scopes,
@@ -94,11 +100,13 @@ class GoogleCalendarOAuthConnector {
         );
       }
 
+      final clientId = await _resolveClientId();
+
       final response = await http.post(
         Uri.parse(_tokenEndpoint),
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: {
-          'client_id': AppConfig.googleCalendarClientId,
+          'client_id': clientId,
           'grant_type': 'authorization_code',
           'code': code,
           'redirect_uri': _redirectUri,
@@ -145,6 +153,20 @@ class GoogleCalendarOAuthConnector {
       pkceDelete(_verifierStorageKey);
       pkceDelete(_stateStorageKey);
     }
+  }
+
+  /// Fetches the client ID from the backend at runtime.
+  /// Falls back to the dart-define value for local development.
+  Future<String> _resolveClientId() async {
+    try {
+      final config = await _configDs.getOAuthConfig();
+      if (config.googleCalendarClientId.isNotEmpty) {
+        return config.googleCalendarClientId;
+      }
+    } catch (_) {
+      // ignore — fall through to dart-define fallback
+    }
+    return AppConfig.googleCalendarClientId;
   }
 
   String get _redirectUri {

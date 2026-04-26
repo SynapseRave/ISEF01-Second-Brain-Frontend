@@ -194,7 +194,7 @@ Each integration lives in its own datasource under the relevant feature:
 | Service | Auth method | Credentials |
 |---|---|---|
 | Google Calendar | OAuth2 PKCE (browser redirect) | `access_token`, `refresh_token`, `expires_at` |
-| Microsoft OneNote | OAuth2 PKCE (browser redirect) | `access_token`, `refresh_token`, `expires_at` |
+| Microsoft OneNote | OAuth2 PKCE (browser redirect) | `access_token`, `refresh_token`, `expires_at` | ⚠️ Client-ID nicht konfiguriert — Button deaktiviert |
 | Notion | API Token (dialog) | `api_token` |
 | Todoist | API Token (dialog) | `api_token` |
 | Obsidian | Local REST Plugin (dialog) | `api_key`, `base_url` (default: `http://localhost:27123`) |
@@ -206,11 +206,14 @@ OAuth services open a browser redirect; API-key services use `ApiKeyInputDialog`
 
 **Done:**
 - Keycloak PKCE login (Authorization Code Flow + S256)
-- OAuth2 flows for Google Calendar and OneNote (PKCE, callback pages)
+- OAuth2 flows for Google Calendar and OneNote (PKCE, callback pages — OneNote UI disabled, see below)
 - API-Key dialog for Notion, Todoist, Obsidian
 - Chat input wired: Enter key + Send button → `ChatCubit.sendMessage()`
 - Live SSE streaming: chunk events appear token by token
 - Typing indicator, status messages, auto-scroll, disabled input while streaming
+
+**Known limitations:**
+- **Microsoft OneNote**: `MICROSOFT_CLIENT_ID` ist nicht konfiguriert — Azure App-Registrierung scheitert an fehlendem organisationalem Tenant (persönlicher Microsoft-Account reicht nicht aus). Der OneNote-Button in der Settings-UI ist deaktiviert mit einem Hinweis. Der Code (Connector, Callback-Route, Backend-MCP-Server) ist vollständig implementiert und kann jederzeit aktiviert werden, sobald eine Client-ID vorliegt. Zum Aktivieren: `MICROSOFT_CLIENT_ID` in `.env` (Backend) setzen — `_disabledServices` in `settings_page.dart` muss dann `ServiceType.oneNote` nicht mehr enthalten.
 
 **Runtime configuration (dart-defines):**
 ```bash

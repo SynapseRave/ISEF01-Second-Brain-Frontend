@@ -17,6 +17,9 @@ class SettingsPage extends StatelessWidget {
     ServiceType.oneNote,
   };
 
+  /// Dienste ohne konfigurierte Client-ID — Button deaktiviert mit Hinweis.
+  static const _disabledServices = {ServiceType.oneNote};
+
   /// Alle unterstützten Dienste in Anzeigereihenfolge.
   static const _supportedServices = [
     ServiceType.googleCalendar,
@@ -87,6 +90,10 @@ class SettingsPage extends StatelessWidget {
                           connection: connection,
                           description: _descriptionFor(service),
                           isBusy: activeService == service,
+                          isDisabled: _disabledServices.contains(service),
+                          disabledHint: _disabledServices.contains(service)
+                              ? _disabledHintFor(service)
+                              : null,
                           onConnect: () => _onConnect(context, service),
                           onDisconnect: () async {
                             final confirmed = await AppConfirmDialog.show(
@@ -180,6 +187,13 @@ class SettingsPage extends StatelessWidget {
     ServiceType.notion => 'Notion',
     ServiceType.todoist => 'Todoist',
     ServiceType.obsidian => 'Obsidian',
+  };
+
+  static String _disabledHintFor(ServiceType service) => switch (service) {
+    ServiceType.oneNote =>
+      'Microsoft OAuth-App nicht konfiguriert. '
+          'MICROSOFT_CLIENT_ID fehlt — Integration derzeit nicht verfügbar.',
+    _ => 'Diese Integration ist derzeit nicht verfügbar.',
   };
 
   static String _descriptionFor(ServiceType service) => switch (service) {

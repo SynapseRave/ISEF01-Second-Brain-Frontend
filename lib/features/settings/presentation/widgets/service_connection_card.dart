@@ -11,6 +11,8 @@ class ServiceConnectionCard extends StatelessWidget {
     required this.isBusy,
     required this.onConnect,
     required this.onDisconnect,
+    this.isDisabled = false,
+    this.disabledHint,
   });
 
   final ServiceType service;
@@ -19,6 +21,8 @@ class ServiceConnectionCard extends StatelessWidget {
   final bool isBusy;
   final VoidCallback onConnect;
   final VoidCallback onDisconnect;
+  final bool isDisabled;
+  final String? disabledHint;
 
   @override
   Widget build(BuildContext context) {
@@ -69,13 +73,34 @@ class ServiceConnectionCard extends StatelessWidget {
             ),
           ],
           const SizedBox(height: AppSpacing.px20),
+          if (isDisabled && disabledHint != null) ...[
+            Row(
+              children: [
+                Icon(
+                  Icons.info_outline_rounded,
+                  size: 14,
+                  color: AppColors.slate400,
+                ),
+                const SizedBox(width: AppSpacing.px6),
+                Expanded(
+                  child: Text(
+                    disabledHint!,
+                    style: AppTypography.body11.copyWith(
+                      color: AppColors.slate400,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.px12),
+          ],
           Row(
             children: [
               AppButton(
                 label: isConnected ? 'Erneut verbinden' : 'Verbinden',
                 icon: isConnected ? Icons.refresh_rounded : Icons.link_rounded,
                 size: AppButtonSize.medium,
-                onPressed: isBusy ? null : onConnect,
+                onPressed: isBusy || isDisabled ? null : onConnect,
               ),
               if (isConnected) ...[
                 const SizedBox(width: AppSpacing.px8),
@@ -84,7 +109,7 @@ class ServiceConnectionCard extends StatelessWidget {
                   icon: Icons.link_off_rounded,
                   variant: AppButtonVariant.secondary,
                   isDestructive: true,
-                  onPressed: isBusy ? null : onDisconnect,
+                  onPressed: isBusy || isDisabled ? null : onDisconnect,
                 ),
               ],
             ],
