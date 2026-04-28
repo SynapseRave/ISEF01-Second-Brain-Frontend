@@ -4,9 +4,9 @@ import 'package:isef01_second_brain_frontend/core/error/failure.dart';
 import 'package:isef01_second_brain_frontend/features/settings/data/oauth/google_calendar_oauth_connector.dart';
 import 'package:isef01_second_brain_frontend/features/settings/data/oauth/onenote_oauth_connector.dart';
 import 'package:isef01_second_brain_frontend/features/settings/domain/entities/service_connection.dart';
+import 'package:isef01_second_brain_frontend/features/settings/domain/repositories/settings_repository.dart';
 import 'package:isef01_second_brain_frontend/features/settings/domain/usecases/connect_service_usecase.dart';
 import 'package:isef01_second_brain_frontend/features/settings/domain/usecases/disconnect_service_usecase.dart';
-import 'package:isef01_second_brain_frontend/features/settings/domain/repositories/settings_repository.dart';
 import 'package:isef01_second_brain_frontend/features/settings/presentation/bloc/settings_state.dart';
 
 @lazySingleton
@@ -46,10 +46,10 @@ class SettingsCubit extends Cubit<SettingsState> {
     if (failure != null) {
       emit(SettingsError(message: failure.message, connections: current));
       return failure;
-    } else {
-      await loadConnections();
-      return null;
     }
+
+    await loadConnections();
+    return null;
   }
 
   Future<Failure?> startConnection(ServiceType service) async {
@@ -61,7 +61,7 @@ class SettingsCubit extends Cubit<SettingsState> {
       ServiceType.oneNote => _oneNoteConnector.start(),
       _ => Future.value(
         const ValidationFailure(
-          'Für diesen Dienst ist noch kein Connect-Flow verfügbar.',
+          'Fuer diesen Dienst ist noch kein Connect-Flow verfuegbar.',
         ),
       ),
     };
@@ -79,28 +79,30 @@ class SettingsCubit extends Cubit<SettingsState> {
     final current = _currentConnections;
     emit(SettingsConnecting(connections: current, activeService: service));
 
-    final (bundle, oauthFailure) = await switch (service) {
-      ServiceType.googleCalendar => _googleCalendarConnector.complete(
-        callbackUri,
-      ),
-      ServiceType.oneNote => _oneNoteConnector.complete(callbackUri),
-      _ => Future.value((
-        null,
-        const ValidationFailure(
-          'Für diesen Dienst ist noch kein Connect-Flow verfügbar.',
-        ),
-      )),
-    };
-
-    if (oauthFailure != null) {
-      emit(SettingsError(message: oauthFailure.message, connections: current));
-      return oauthFailure;
-    }
-
-    final storeFailure = await _connect(service, bundle!.toJson());
-    if (storeFailure != null) {
-      emit(SettingsError(message: storeFailure.message, connections: current));
-      return storeFailure;
+    switch (service) {
+      case ServiceType.googleCalendar:
+        final oauthFailure = await _googleCalendarConnector.complete(callbackUri);
+        if (oauthFailure != null) {
+          emit(SettingsError(message: oauthFailure.message, connections: current));
+          return oauthFailure;
+        }
+      case ServiceType.oneNote:
+        final (bundle, oauthFailure) = await _oneNoteConnector.complete(callbackUri);
+        if (oauthFailure != null) {
+          emit(SettingsError(message: oauthFailure.message, connections: current));
+          return oauthFailure;
+        }
+        final storeFailure = await _connect(service, bundle!.toJson());
+        if (storeFailure != null) {
+          emit(SettingsError(message: storeFailure.message, connections: current));
+          return storeFailure;
+        }
+      default:
+        const failure = ValidationFailure(
+          'Fuer diesen Dienst ist noch kein Connect-Flow verfuegbar.',
+        );
+        emit(SettingsError(message: failure.message, connections: current));
+        return failure;
     }
 
     await loadConnections();
@@ -115,10 +117,10 @@ class SettingsCubit extends Cubit<SettingsState> {
     if (failure != null) {
       emit(SettingsError(message: failure.message, connections: current));
       return failure;
-    } else {
-      await loadConnections();
-      return null;
     }
+
+    await loadConnections();
+    return null;
   }
 
   List<ServiceConnection> get _currentConnections => switch (state) {

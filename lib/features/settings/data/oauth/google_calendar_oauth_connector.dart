@@ -1,6 +1,4 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:isef01_second_brain_frontend/app/router.dart';
 import 'package:isef01_second_brain_frontend/core/auth/platform/browser_redirect_stub.dart'
@@ -9,20 +7,20 @@ import 'package:isef01_second_brain_frontend/core/auth/platform/pkce_storage_stu
     if (dart.library.js_interop) 'package:isef01_second_brain_frontend/core/auth/platform/pkce_storage_web.dart';
 import 'package:isef01_second_brain_frontend/core/error/failure.dart';
 import 'package:isef01_second_brain_frontend/core/utils/app_config.dart';
+import 'package:isef01_second_brain_frontend/features/settings/data/datasources/auth_remote_datasource.dart';
 import 'package:isef01_second_brain_frontend/features/settings/data/datasources/config_remote_datasource.dart';
 import 'package:isef01_second_brain_frontend/features/settings/data/oauth/oauth_pkce.dart';
-import 'package:isef01_second_brain_frontend/features/settings/domain/entities/oauth_credential_bundle.dart';
 
 @lazySingleton
 class GoogleCalendarOAuthConnector {
-  const GoogleCalendarOAuthConnector(this._configDs);
+  const GoogleCalendarOAuthConnector(this._configDs, this._authDs);
 
   final ConfigRemoteDatasource _configDs;
+  final AuthRemoteDatasource _authDs;
 
   static const _serviceKey = 'google_calendar';
   static const _authorizationEndpoint =
       'https://accounts.google.com/o/oauth2/v2/auth';
-  static const _tokenEndpoint = 'https://oauth2.googleapis.com/token';
   static const _scopes = 'https://www.googleapis.com/auth/calendar.events';
   static const _verifierStorageKey = '${_serviceKey}_pkce_verifier';
   static const _stateStorageKey = '${_serviceKey}_oauth_state';
@@ -65,7 +63,7 @@ class GoogleCalendarOAuthConnector {
     }
   }
 
-  Future<(OAuthCredentialBundle?, Failure?)> complete(Uri callbackUri) async {
+  Future<Failure?> complete(Uri callbackUri) async {
     final state = callbackUri.queryParameters['state'];
     final code = callbackUri.queryParameters['code'];
     final verifier = pkceRead(_verifierStorageKey);
@@ -73,90 +71,42 @@ class GoogleCalendarOAuthConnector {
 
     try {
       if (callbackUri.queryParameters.containsKey('error')) {
-        return (null, AuthFailure(describeOAuthCallbackError(callbackUri)));
+        return AuthFailure(describeOAuthCallbackError(callbackUri));
       }
       if (verifier == null || expectedState == null) {
-        return (
-          null,
-          const AuthFailure(
-            'Der Google-Connect-Flow ist nicht mehr gültig. Bitte erneut verbinden.',
-          ),
+        return const AuthFailure(
+          'Der Google-Connect-Flow ist nicht mehr gueltig. Bitte erneut verbinden.',
         );
       }
       if (state != expectedState) {
-        return (
-          null,
-          const AuthFailure(
-            'Ungültiger Google-Callback erkannt. Bitte erneut verbinden.',
-          ),
+        return const AuthFailure(
+          'Ungueltiger Google-Callback erkannt. Bitte erneut verbinden.',
         );
       }
       if (code == null || code.isEmpty) {
-        return (
-          null,
-          const AuthFailure(
-            'Google hat keinen Authorization Code zurückgegeben.',
-          ),
+        return const AuthFailure(
+          'Google hat keinen Authorization Code zurueckgegeben.',
         );
       }
 
-      final clientId = await _resolveClientId();
-
-      final response = await http.post(
-        Uri.parse(_tokenEndpoint),
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: {
-          'client_id': clientId,
-          'grant_type': 'authorization_code',
-          'code': code,
-          'redirect_uri': _redirectUri,
-          'code_verifier': verifier,
-        },
+      await _authDs.exchangeGoogleToken(
+        code: code,
+        codeVerifier: verifier,
+        redirectUri: _redirectUri,
       );
-
-      final body = _decodeBody(response.body);
-      if (response.statusCode != 200) {
-        return (
-          null,
-          AuthFailure(
-            describeTokenExchangeError(
-              body,
-              fallback: 'Google-Token-Austausch fehlgeschlagen.',
-            ),
-          ),
-        );
-      }
-
-      final accessToken = body?['access_token']?.toString();
-      final refreshToken = body?['refresh_token']?.toString();
-      final expiresIn = int.tryParse(body?['expires_in']?.toString() ?? '');
-      if (accessToken == null || refreshToken == null || expiresIn == null) {
-        return (
-          null,
-          const AuthFailure(
-            'Google hat keine vollständigen Tokens zurückgegeben.',
-          ),
-        );
-      }
-
-      return (
-        OAuthCredentialBundle(
-          accessToken: accessToken,
-          refreshToken: refreshToken,
-          expiresAt: DateTime.now().toUtc().add(Duration(seconds: expiresIn)),
-        ),
-        null,
-      );
+      return null;
+    } on DioException catch (e) {
+      final detail =
+          (e.response?.data as Map<String, dynamic>?)?['detail']?.toString();
+      return AuthFailure(detail ?? 'Google-Token-Austausch fehlgeschlagen.');
     } catch (e) {
-      return (null, AuthFailure('Google-Token-Austausch fehlgeschlagen: $e'));
+      return AuthFailure('Google-Token-Austausch fehlgeschlagen: $e');
     } finally {
       pkceDelete(_verifierStorageKey);
       pkceDelete(_stateStorageKey);
     }
   }
 
-  /// Fetches the client ID from the backend at runtime.
-  /// Falls back to the dart-define value for local development.
   Future<String> _resolveClientId() async {
     try {
       final config = await _configDs.getOAuthConfig();
@@ -164,7 +114,7 @@ class GoogleCalendarOAuthConnector {
         return config.googleCalendarClientId;
       }
     } catch (_) {
-      // ignore — fall through to dart-define fallback
+      // ignore - fall through to dart-define fallback
     }
     return AppConfig.googleCalendarClientId;
   }
@@ -174,11 +124,5 @@ class GoogleCalendarOAuthConnector {
       return AppConfig.googleCalendarRedirectUri;
     }
     return '${Uri.base.origin}${AppRoutes.googleCalendarCallback}';
-  }
-
-  Map<String, dynamic>? _decodeBody(String body) {
-    if (body.isEmpty) return null;
-    final decoded = jsonDecode(body);
-    return decoded is Map<String, dynamic> ? decoded : null;
   }
 }

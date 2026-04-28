@@ -17,13 +17,9 @@ class ServiceOAuthCallbackPage extends StatefulWidget {
 }
 
 class _ServiceOAuthCallbackPageState extends State<ServiceOAuthCallbackPage> {
-  bool _handled = false;
-
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_handled) return;
-    _handled = true;
+  void initState() {
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => _handleCallback());
   }
 
