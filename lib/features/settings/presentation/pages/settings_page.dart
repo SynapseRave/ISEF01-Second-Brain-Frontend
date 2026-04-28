@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isef01_second_brain_frontend/app/router.dart';
+import 'package:isef01_second_brain_frontend/core/auth/platform/pkce_storage_stub.dart'
+    if (dart.library.js_interop) 'package:isef01_second_brain_frontend/core/auth/platform/pkce_storage_web.dart';
 import 'package:isef01_second_brain_frontend/core/design_system/design_system.dart';
 import 'package:isef01_second_brain_frontend/core/widgets/app_loading_indicator.dart';
 import 'package:isef01_second_brain_frontend/features/settings/domain/entities/service_connection.dart';
@@ -19,6 +21,10 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   bool _handledOAuthFallback = false;
+  static const _googleVerifierStorageKey = 'google_calendar_pkce_verifier';
+  static const _googleStateStorageKey = 'google_calendar_oauth_state';
+  static const _oneNoteVerifierStorageKey = 'onenote_pkce_verifier';
+  static const _oneNoteStateStorageKey = 'onenote_oauth_state';
 
   static const _oauthServices = {
     ServiceType.googleCalendar,
@@ -56,6 +62,9 @@ class _SettingsPageState extends State<SettingsPage> {
         !uri.queryParameters.containsKey('error')) {
       return;
     }
+    if (!_hasPendingPkceState(service)) {
+      return;
+    }
 
     _handledOAuthFallback = true;
     final failure = await context.read<SettingsCubit>().completeConnectionCallback(
@@ -71,6 +80,26 @@ class _SettingsPageState extends State<SettingsPage> {
       type: failure == null ? ToastType.success : ToastType.error,
     );
     context.go(AppRoutes.settings);
+  }
+
+  bool _hasPendingPkceState(ServiceType service) {
+    final (verifierKey, stateKey) = switch (service) {
+      ServiceType.googleCalendar => (
+        _googleVerifierStorageKey,
+        _googleStateStorageKey,
+      ),
+      ServiceType.oneNote => (
+        _oneNoteVerifierStorageKey,
+        _oneNoteStateStorageKey,
+      ),
+      _ => ('', ''),
+    };
+
+    if (verifierKey.isEmpty || stateKey.isEmpty) {
+      return false;
+    }
+
+    return pkceRead(verifierKey) != null || pkceRead(stateKey) != null;
   }
 
   @override
