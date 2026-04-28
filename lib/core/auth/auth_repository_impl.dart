@@ -47,6 +47,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   bool get hasAuthCallback =>
+      _isOnAuthRedirectUri &&
       _hasPendingPkce &&
       (_hasAuthorizationCodeCallback || _hasAuthorizationErrorCallback);
 
@@ -270,6 +271,12 @@ class AuthRepositoryImpl implements AuthRepository {
 
   bool get _hasAuthorizationErrorCallback =>
       Uri.base.queryParameters.containsKey('error');
+
+  bool get _isOnAuthRedirectUri {
+    final expected = Uri.parse(AppConfig.redirectUri);
+    final current = Uri.base;
+    return current.origin == expected.origin && current.path == expected.path;
+  }
 
   void _clearPkceState() {
     pkceDelete(_pkceVerifierKey);
