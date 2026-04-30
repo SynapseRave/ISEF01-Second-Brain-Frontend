@@ -96,8 +96,8 @@ class GoogleCalendarOAuthConnector {
       );
       return null;
     } on DioException catch (e) {
-      final detail =
-          (e.response?.data as Map<String, dynamic>?)?['detail']?.toString();
+      final detail = (e.response?.data as Map<String, dynamic>?)?['detail']
+          ?.toString();
       return AuthFailure(detail ?? 'Google-Token-Austausch fehlgeschlagen.');
     } catch (e) {
       return AuthFailure('Google-Token-Austausch fehlgeschlagen: $e');

@@ -67,10 +67,9 @@ class _SettingsPageState extends State<SettingsPage> {
     }
 
     _handledOAuthFallback = true;
-    final failure = await context.read<SettingsCubit>().completeConnectionCallback(
-      service,
-      uri,
-    );
+    final failure = await context
+        .read<SettingsCubit>()
+        .completeConnectionCallback(service, uri);
     if (!mounted) return;
 
     final message = failure?.message ?? '${_labelFor(service)} verbunden.';

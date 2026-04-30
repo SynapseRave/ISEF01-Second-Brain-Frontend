@@ -81,20 +81,30 @@ class SettingsCubit extends Cubit<SettingsState> {
 
     switch (service) {
       case ServiceType.googleCalendar:
-        final oauthFailure = await _googleCalendarConnector.complete(callbackUri);
+        final oauthFailure = await _googleCalendarConnector.complete(
+          callbackUri,
+        );
         if (oauthFailure != null) {
-          emit(SettingsError(message: oauthFailure.message, connections: current));
+          emit(
+            SettingsError(message: oauthFailure.message, connections: current),
+          );
           return oauthFailure;
         }
       case ServiceType.oneNote:
-        final (bundle, oauthFailure) = await _oneNoteConnector.complete(callbackUri);
+        final (bundle, oauthFailure) = await _oneNoteConnector.complete(
+          callbackUri,
+        );
         if (oauthFailure != null) {
-          emit(SettingsError(message: oauthFailure.message, connections: current));
+          emit(
+            SettingsError(message: oauthFailure.message, connections: current),
+          );
           return oauthFailure;
         }
         final storeFailure = await _connect(service, bundle!.toJson());
         if (storeFailure != null) {
-          emit(SettingsError(message: storeFailure.message, connections: current));
+          emit(
+            SettingsError(message: storeFailure.message, connections: current),
+          );
           return storeFailure;
         }
       default:
