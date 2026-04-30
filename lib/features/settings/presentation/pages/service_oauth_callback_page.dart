@@ -17,13 +17,11 @@ class ServiceOAuthCallbackPage extends StatefulWidget {
 }
 
 class _ServiceOAuthCallbackPageState extends State<ServiceOAuthCallbackPage> {
-  bool _handled = false;
+  String? _errorMessage;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_handled) return;
-    _handled = true;
+  void initState() {
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => _handleCallback());
   }
 
@@ -40,11 +38,19 @@ class _ServiceOAuthCallbackPageState extends State<ServiceOAuthCallbackPage> {
       message: message,
       type: failure == null ? ToastType.success : ToastType.error,
     );
-    context.go(AppRoutes.settings);
+
+    if (failure == null) {
+      context.go(AppRoutes.settings);
+      return;
+    }
+
+    setState(() => _errorMessage = failure.message);
   }
 
   @override
   Widget build(BuildContext context) {
+    final errorMessage = _errorMessage;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Center(
@@ -55,21 +61,31 @@ class _ServiceOAuthCallbackPageState extends State<ServiceOAuthCallbackPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const AppLoadingIndicator(),
+                if (errorMessage == null) const AppLoadingIndicator(),
                 const SizedBox(height: AppSpacing.px24),
                 Text(
-                  'Verbindung wird abgeschlossen',
+                  errorMessage == null
+                      ? 'Verbindung wird abgeschlossen'
+                      : 'Verbindung fehlgeschlagen',
                   style: AppTypography.h3,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: AppSpacing.px8),
                 Text(
-                  '${_labelFor(widget.service)} wird mit dem Backend verknüpft.',
+                  errorMessage ??
+                      '${_labelFor(widget.service)} wird mit dem Backend verknuepft.',
                   style: AppTypography.bodyBase.copyWith(
                     color: AppColors.slate500,
                   ),
                   textAlign: TextAlign.center,
                 ),
+                if (errorMessage != null) ...[
+                  const SizedBox(height: AppSpacing.px24),
+                  FilledButton(
+                    onPressed: () => context.go(AppRoutes.settings),
+                    child: const Text('Zurueck zu den Einstellungen'),
+                  ),
+                ],
               ],
             ),
           ),

@@ -61,6 +61,24 @@ GoRouter createRouter(AuthCubit authCubit) {
         name: 'login',
         builder: (context, state) => const LoginPage(),
       ),
+      GoRoute(
+        path: AppRoutes.googleCalendarCallback,
+        name: 'google-calendar-callback',
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<SettingsCubit>(),
+          child: const ServiceOAuthCallbackPage(
+            service: ServiceType.googleCalendar,
+          ),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.oneNoteCallback,
+        name: 'onenote-callback',
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<SettingsCubit>(),
+          child: const ServiceOAuthCallbackPage(service: ServiceType.oneNote),
+        ),
+      ),
       ShellRoute(
         builder: (context, state, child) => MultiBlocProvider(
           providers: [
@@ -90,19 +108,6 @@ GoRouter createRouter(AuthCubit authCubit) {
             path: AppRoutes.settings,
             name: 'settings',
             builder: (context, state) => const SettingsPage(),
-          ),
-          GoRoute(
-            path: AppRoutes.googleCalendarCallback,
-            name: 'google-calendar-callback',
-            builder: (context, state) => const ServiceOAuthCallbackPage(
-              service: ServiceType.googleCalendar,
-            ),
-          ),
-          GoRoute(
-            path: AppRoutes.oneNoteCallback,
-            name: 'onenote-callback',
-            builder: (context, state) =>
-                const ServiceOAuthCallbackPage(service: ServiceType.oneNote),
           ),
         ],
       ),

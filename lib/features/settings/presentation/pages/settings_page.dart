@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:isef01_second_brain_frontend/app/router.dart';
+import 'package:isef01_second_brain_frontend/core/auth/platform/pkce_storage_stub.dart'
+    if (dart.library.js_interop) 'package:isef01_second_brain_frontend/core/auth/platform/pkce_storage_web.dart';
 import 'package:isef01_second_brain_frontend/core/design_system/design_system.dart';
 import 'package:isef01_second_brain_frontend/core/widgets/app_loading_indicator.dart';
 import 'package:isef01_second_brain_frontend/features/settings/domain/entities/service_connection.dart';
@@ -8,19 +12,27 @@ import 'package:isef01_second_brain_frontend/features/settings/presentation/bloc
 import 'package:isef01_second_brain_frontend/features/settings/presentation/widgets/api_key_input_dialog.dart';
 import 'package:isef01_second_brain_frontend/features/settings/presentation/widgets/service_connection_card.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
-  /// OAuth-basierte Dienste öffnen den Browser-Flow.
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  bool _handledOAuthFallback = false;
+  static const _googleVerifierStorageKey = 'google_calendar_pkce_verifier';
+  static const _googleStateStorageKey = 'google_calendar_oauth_state';
+  static const _oneNoteVerifierStorageKey = 'onenote_pkce_verifier';
+  static const _oneNoteStateStorageKey = 'onenote_oauth_state';
+
   static const _oauthServices = {
     ServiceType.googleCalendar,
     ServiceType.oneNote,
   };
 
-  /// Dienste ohne konfigurierte Client-ID — Button deaktiviert mit Hinweis.
   static const _disabledServices = {ServiceType.oneNote};
 
-  /// Alle unterstützten Dienste in Anzeigereihenfolge.
   static const _supportedServices = [
     ServiceType.googleCalendar,
     ServiceType.oneNote,
@@ -28,6 +40,66 @@ class SettingsPage extends StatelessWidget {
     ServiceType.todoist,
     ServiceType.obsidian,
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _handleOAuthFallback());
+  }
+
+  Future<void> _handleOAuthFallback() async {
+    if (_handledOAuthFallback || !mounted) return;
+
+    final uri = Uri.base;
+    final service = switch (uri.path) {
+      AppRoutes.googleCalendarCallback => ServiceType.googleCalendar,
+      AppRoutes.oneNoteCallback => ServiceType.oneNote,
+      _ => null,
+    };
+
+    if (service == null) return;
+    if (!uri.queryParameters.containsKey('code') &&
+        !uri.queryParameters.containsKey('error')) {
+      return;
+    }
+    if (!_hasPendingPkceState(service)) {
+      return;
+    }
+
+    _handledOAuthFallback = true;
+    final failure = await context
+        .read<SettingsCubit>()
+        .completeConnectionCallback(service, uri);
+    if (!mounted) return;
+
+    final message = failure?.message ?? '${_labelFor(service)} verbunden.';
+    AppToast.show(
+      context,
+      message: message,
+      type: failure == null ? ToastType.success : ToastType.error,
+    );
+    context.go(AppRoutes.settings);
+  }
+
+  bool _hasPendingPkceState(ServiceType service) {
+    final (verifierKey, stateKey) = switch (service) {
+      ServiceType.googleCalendar => (
+        _googleVerifierStorageKey,
+        _googleStateStorageKey,
+      ),
+      ServiceType.oneNote => (
+        _oneNoteVerifierStorageKey,
+        _oneNoteStateStorageKey,
+      ),
+      _ => ('', ''),
+    };
+
+    if (verifierKey.isEmpty || stateKey.isEmpty) {
+      return false;
+    }
+
+    return pkceRead(verifierKey) != null || pkceRead(stateKey) != null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,14 +204,12 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  /// Verbindungsflow starten — OAuth für Calendar/OneNote, Dialog für die anderen.
   Future<void> _onConnect(BuildContext context, ServiceType service) async {
     if (_oauthServices.contains(service)) {
       context.read<SettingsCubit>().startConnection(service);
       return;
     }
 
-    // API-Key-Dienst: Dialog öffnen und Credentials einsammeln
     final credentials = await ApiKeyInputDialog.show(context, service);
     if (credentials == null || credentials.isEmpty) return;
     if (!context.mounted) return;
@@ -157,8 +227,6 @@ class SettingsPage extends StatelessWidget {
       );
     }
   }
-
-  // ── Helpers ────────────────────────────────────────────────────────────────
 
   static List<ServiceConnection> _connectionsFrom(SettingsState state) =>
       switch (state) {
@@ -192,8 +260,8 @@ class SettingsPage extends StatelessWidget {
   static String _disabledHintFor(ServiceType service) => switch (service) {
     ServiceType.oneNote =>
       'Microsoft OAuth-App nicht konfiguriert. '
-          'MICROSOFT_CLIENT_ID fehlt — Integration derzeit nicht verfügbar.',
-    _ => 'Diese Integration ist derzeit nicht verfügbar.',
+          'MICROSOFT_CLIENT_ID fehlt - Integration derzeit nicht verfuegbar.',
+    _ => 'Diese Integration ist derzeit nicht verfuegbar.',
   };
 
   static String _descriptionFor(ServiceType service) => switch (service) {
@@ -201,16 +269,16 @@ class SettingsPage extends StatelessWidget {
       'Zugriff auf Google-Kalendertermine. '
           'Access- und Refresh-Token werden sicher im Backend gespeichert.',
     ServiceType.oneNote =>
-      'Zugriff auf OneNote-Notizbücher über Microsoft Graph. '
+      'Zugriff auf OneNote-Notizbuecher ueber Microsoft Graph. '
           'Access- und Refresh-Token werden sicher im Backend gespeichert.',
     ServiceType.notion =>
       'Zugriff auf Notion-Seiten und Datenbanken. '
-          'Benötigt einen Notion Integration Token (Settings → My integrations).',
+          'Benoetigt einen Notion Integration Token (Settings -> My integrations).',
     ServiceType.todoist =>
       'Zugriff auf Todoist-Aufgaben und Projekte. '
-          'Benötigt den API Token aus den Todoist-Einstellungen unter Integrationen.',
+          'Benoetigt den API Token aus den Todoist-Einstellungen unter Integrationen.',
     ServiceType.obsidian =>
-      'Zugriff auf dein lokales Obsidian-Vault über das Local REST API Plugin. '
+      'Zugriff auf dein lokales Obsidian-Vault ueber das Local REST API Plugin. '
           'Das Plugin muss in Obsidian installiert und aktiviert sein.',
   };
 }
