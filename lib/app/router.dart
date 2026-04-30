@@ -46,9 +46,15 @@ GoRouter createRouter(AuthCubit authCubit) {
       final isServiceCallback = state.uri.path.startsWith(
         '/settings/connect/callback/',
       );
+      // Keycloak-Haupt-Login-Callback: ?code= und ?state= auf der Root-Route.
+      final isKeycloakCallback =
+          state.uri.queryParameters.containsKey('code') &&
+          state.uri.queryParameters.containsKey('state');
 
       if (isLoading) {
-        return (isOnLogin || isServiceCallback) ? null : AppRoutes.login;
+        return (isOnLogin || isServiceCallback || isKeycloakCallback)
+            ? null
+            : AppRoutes.login;
       }
 
       if (!isAuthenticated && !isOnLogin) return AppRoutes.login;
