@@ -197,22 +197,24 @@ class _EventPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final timeStr = DateFormat('dd.MM.yyyy, HH:mm').format(event.startTime.toLocal());
+    final local = event.startTime.toLocal();
+    final dateStr = DateFormat('dd.MM.yyyy').format(local);
+    final timeStr = DateFormat('HH:mm').format(local);
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.px12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
+            '$dateStr · $timeStr Uhr',
+            style: AppTypography.labelSm.copyWith(color: AppColors.slate400),
+          ),
+          const SizedBox(height: AppSpacing.px4),
+          Text(
             event.title,
             style: AppTypography.bodySm,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: AppSpacing.px4),
-          Text(
-            timeStr,
-            style: AppTypography.labelSm.copyWith(color: AppColors.slate400),
           ),
         ],
       ),
