@@ -19,6 +19,16 @@ import '../auth/auth_interceptor.dart' as _i53;
 import '../auth/auth_repository.dart' as _i778;
 import '../auth/auth_repository_impl.dart' as _i790;
 import '../auth/refresh_interceptor.dart' as _i312;
+import '../../features/dashboard/data/datasources/dashboard_remote_datasource.dart'
+    as _i3001;
+import '../../features/dashboard/data/repositories/dashboard_repository_impl.dart'
+    as _i3002;
+import '../../features/dashboard/domain/repositories/dashboard_repository.dart'
+    as _i3003;
+import '../../features/dashboard/domain/usecases/get_dashboard_items_usecase.dart'
+    as _i3004;
+import '../../features/dashboard/presentation/bloc/dashboard_cubit.dart'
+    as _i3005;
 import '../../features/chat/data/datasources/chat_remote_datasource.dart'
     as _i2001;
 import '../../features/chat/data/repositories/chat_repository_impl.dart'
@@ -84,6 +94,18 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i53.AuthInterceptor>(),
         gh<_i312.RefreshInterceptor>(),
       ),
+    );
+    gh.lazySingleton<_i3001.DashboardRemoteDatasource>(
+      () => _i3001.DashboardRemoteDatasourceImpl(gh<_i361.Dio>()),
+    );
+    gh.lazySingleton<_i3003.DashboardRepository>(
+      () => _i3002.DashboardRepositoryImpl(gh<_i3001.DashboardRemoteDatasource>()),
+    );
+    gh.lazySingleton<_i3004.GetDashboardItemsUseCase>(
+      () => _i3004.GetDashboardItemsUseCase(gh<_i3003.DashboardRepository>()),
+    );
+    gh.factory<_i3005.DashboardCubit>(
+      () => _i3005.DashboardCubit(gh<_i3004.GetDashboardItemsUseCase>()),
     );
     gh.lazySingleton<_i2001.ChatRemoteDatasource>(
       () => _i2001.ChatRemoteDatasourceImpl(gh<_i778.AuthRepository>()),
