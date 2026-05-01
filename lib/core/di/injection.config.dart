@@ -99,7 +99,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i3001.DashboardRemoteDatasourceImpl(gh<_i361.Dio>()),
     );
     gh.lazySingleton<_i3003.DashboardRepository>(
-      () => _i3002.DashboardRepositoryImpl(gh<_i3001.DashboardRemoteDatasource>()),
+      () => _i3002.DashboardRepositoryImpl(
+        gh<_i3001.DashboardRemoteDatasource>(),
+      ),
     );
     gh.lazySingleton<_i3004.GetDashboardItemsUseCase>(
       () => _i3004.GetDashboardItemsUseCase(gh<_i3003.DashboardRepository>()),

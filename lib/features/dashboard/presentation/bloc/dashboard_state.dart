@@ -13,11 +13,7 @@ final class DashboardLoading extends DashboardState {
 }
 
 final class DashboardLoaded extends DashboardState {
-  const DashboardLoaded({
-    this.nextEvent,
-    required this.todos,
-    this.lastNote,
-  });
+  const DashboardLoaded({this.nextEvent, required this.todos, this.lastNote});
 
   final CalendarEventItem? nextEvent;
   final List<TodoItem> todos;

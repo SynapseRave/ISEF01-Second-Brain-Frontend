@@ -47,8 +47,12 @@ class DashboardTodoModel {
   final String title;
   final String sourceService;
 
-  TodoItem toEntity() =>
-      TodoItem(id: id, title: title, sourceService: sourceService, isDone: false);
+  TodoItem toEntity() => TodoItem(
+    id: id,
+    title: title,
+    sourceService: sourceService,
+    isDone: false,
+  );
 }
 
 class DashboardNoteModel {

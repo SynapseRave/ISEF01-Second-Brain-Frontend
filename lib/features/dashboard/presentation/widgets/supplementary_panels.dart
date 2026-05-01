@@ -131,7 +131,11 @@ class _NotePreview extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.px12),
       child: Row(
         children: [
-          const Icon(Icons.article_outlined, size: 16, color: AppColors.slate400),
+          const Icon(
+            Icons.article_outlined,
+            size: 16,
+            color: AppColors.slate400,
+          ),
           const SizedBox(width: AppSpacing.px8),
           Expanded(
             child: Text(

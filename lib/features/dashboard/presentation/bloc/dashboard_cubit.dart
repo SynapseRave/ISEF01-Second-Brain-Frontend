@@ -18,10 +18,12 @@ class DashboardCubit extends Cubit<DashboardState> {
       emit(DashboardError(failure.message));
       return;
     }
-    emit(DashboardLoaded(
-      nextEvent: data?.nextEvent,
-      todos: data?.todos ?? [],
-      lastNote: data?.lastNote,
-    ));
+    emit(
+      DashboardLoaded(
+        nextEvent: data?.nextEvent,
+        todos: data?.todos ?? [],
+        lastNote: data?.lastNote,
+      ),
+    );
   }
 }
