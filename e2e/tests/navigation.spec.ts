@@ -18,7 +18,7 @@ async function loginViaKeycloak(page: import('@playwright/test').Page) {
 
   await page.waitForURL(/localhost:3000/, { timeout: 15_000 });
 
-  // Warten bis "Anmelden"-Button verschwunden ist (App ist eingeloggt)
+  // Warten bis der Token-Austausch abgeschlossen ist und die App eingeloggt ist
   await page.waitForFunction(() => {
     const host = document.querySelector('flt-semantics-host');
     if (!host) return false;
@@ -33,16 +33,7 @@ test.use({ storageState: { cookies: [], origins: [] } });
 
 test('Dashboard ist nach Login erreichbar', async ({ page }) => {
   await loginViaKeycloak(page);
-  // URL enthält noch PKCE-Parameter (?code=&state=) bis Issue #11 gefixt ist.
-  // Stattdessen prüfen wir ob das Dashboard-Element sichtbar ist.
-  await page.goto('/');
-  await waitForFlutter(page);
-  await page.waitForFunction(() => {
-    const host = document.querySelector('flt-semantics-host');
-    if (!host) return false;
-    const buttons = host.querySelectorAll('flt-semantics[role="button"]');
-    return !Array.from(buttons).some(el => el.textContent?.trim() === 'Anmelden');
-  }, { timeout: 10_000 });
+  await expect(page).toHaveURL(/\/$|\/dashboard/, { timeout: 10_000 });
 });
 
 test('Einstellungsseite ist erreichbar', async ({ page }) => {
