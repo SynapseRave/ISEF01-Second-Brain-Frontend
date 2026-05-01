@@ -25,18 +25,20 @@ void main() {
     );
     final tData = DashboardData(todos: const [], lastNote: tNote);
 
-    test('gibt DashboardData zurück wenn Repository erfolgreich antwortet',
-        () async {
-      when(
-        () => mockRepository.getDashboard(),
-      ).thenAnswer((_) async => (data: tData, failure: null));
+    test(
+      'gibt DashboardData zurück wenn Repository erfolgreich antwortet',
+      () async {
+        when(
+          () => mockRepository.getDashboard(),
+        ).thenAnswer((_) async => (data: tData, failure: null));
 
-      final result = await useCase();
+        final result = await useCase();
 
-      expect(result.data, tData);
-      expect(result.failure, isNull);
-      verify(() => mockRepository.getDashboard()).called(1);
-    });
+        expect(result.data, tData);
+        expect(result.failure, isNull);
+        verify(() => mockRepository.getDashboard()).called(1);
+      },
+    );
 
     test('gibt Failure zurück wenn Repository fehlschlägt', () async {
       const tFailure = NetworkFailure();
