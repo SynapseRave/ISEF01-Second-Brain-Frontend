@@ -154,39 +154,38 @@ class _TodoList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final items = todos.take(5).toList();
     return Column(
-      children: todos
-          .take(5)
-          .map(
-            (t) => Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.px12,
-                AppSpacing.px8,
-                AppSpacing.px12,
-                0,
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.radio_button_unchecked,
-                    size: 14,
-                    color: AppColors.slate400,
-                  ),
-                  const SizedBox(width: AppSpacing.px8),
-                  Expanded(
-                    child: Text(
-                      t.title,
-                      style: AppTypography.bodySm,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
+      children: [
+        for (final t in items)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.px12,
+              AppSpacing.px8,
+              AppSpacing.px12,
+              0,
             ),
-          )
-          .toList()
-        ..add(const SizedBox(height: AppSpacing.px8)),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.radio_button_unchecked,
+                  size: 14,
+                  color: AppColors.slate400,
+                ),
+                const SizedBox(width: AppSpacing.px8),
+                Expanded(
+                  child: Text(
+                    t.title,
+                    style: AppTypography.bodySm,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        const SizedBox(height: AppSpacing.px8),
+      ],
     );
   }
 }
