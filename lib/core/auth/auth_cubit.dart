@@ -53,6 +53,12 @@ class AuthCubit extends Cubit<AuthState> {
   /// Startet den Keycloak Login-Flow (leitet Browser zu Keycloak weiter).
   Future<void> login() async {
     emit(const AuthLoading());
+    // Wenn kein Callback vorliegt, leitet das Repository den Browser zu Keycloak
+    // weiter — die App wird danach neu geladen, kein State-Update nötig.
+    if (!_authRepository.hasAuthCallback) {
+      await _authRepository.login();
+      return;
+    }
     final failure = await _authRepository.login();
     if (failure != null) {
       emit(AuthError(failure.message));

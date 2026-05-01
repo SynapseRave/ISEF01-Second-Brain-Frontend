@@ -9,6 +9,8 @@ import 'package:injectable/injectable.dart';
 import 'package:isef01_second_brain_frontend/core/auth/auth_repository.dart';
 import 'package:isef01_second_brain_frontend/core/auth/platform/browser_redirect_stub.dart'
     if (dart.library.js_interop) 'package:isef01_second_brain_frontend/core/auth/platform/browser_redirect_web.dart';
+import 'package:isef01_second_brain_frontend/core/auth/platform/clear_url_stub.dart'
+    if (dart.library.js_interop) 'package:isef01_second_brain_frontend/core/auth/platform/clear_url_web.dart';
 import 'package:isef01_second_brain_frontend/core/auth/platform/pkce_storage_stub.dart'
     if (dart.library.js_interop) 'package:isef01_second_brain_frontend/core/auth/platform/pkce_storage_web.dart';
 import 'package:isef01_second_brain_frontend/core/error/failure.dart';
@@ -166,6 +168,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
       final data = jsonDecode(response.body) as Map<String, dynamic>;
       _applyTokenData(data);
+      clearCallbackUrl();
 
       if (data['refresh_token'] != null) {
         await _secureStorage.write(
@@ -275,7 +278,11 @@ class AuthRepositoryImpl implements AuthRepository {
   bool get _isOnAuthRedirectUri {
     final expected = Uri.parse(AppConfig.redirectUri);
     final current = Uri.base;
-    return current.origin == expected.origin && current.path == expected.path;
+    // Uri.parse('http://host') → path == "", Uri.base on '/' → path == "/".
+    // Treat both as equivalent root paths.
+    final expectedPath = expected.path.isEmpty ? '/' : expected.path;
+    final currentPath = current.path.isEmpty ? '/' : current.path;
+    return current.origin == expected.origin && currentPath == expectedPath;
   }
 
   void _clearPkceState() {
