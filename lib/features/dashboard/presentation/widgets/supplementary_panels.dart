@@ -198,7 +198,7 @@ class _EventPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final timeStr = DateFormat('EEE, dd.MM. HH:mm', 'de').format(event.startTime);
+    final timeStr = DateFormat('dd.MM.yyyy, HH:mm').format(event.startTime.toLocal());
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.px12),
       child: Column(
