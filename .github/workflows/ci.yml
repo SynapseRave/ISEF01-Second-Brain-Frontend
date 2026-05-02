@@ -114,11 +114,11 @@ jobs:
           echo "Token response: $TOKEN_RESPONSE"
           TOKEN=$(echo "$TOKEN_RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
 
-          REALM_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8080/admin/realms \
+          REALM_BODY=$(curl -s -X POST http://localhost:8080/admin/realms \
             -H "Authorization: Bearer $TOKEN" \
             -H "Content-Type: application/json" \
             -d @keycloak/realm-export.json)
-          echo "Realm import HTTP: $REALM_RESPONSE"
+          echo "Realm import response: $REALM_BODY"
 
           USER_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
             http://localhost:8080/admin/realms/second-brain/users \
