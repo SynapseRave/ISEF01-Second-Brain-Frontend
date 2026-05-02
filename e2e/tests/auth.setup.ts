@@ -9,7 +9,26 @@ setup('authenticate', async ({ page }) => {
   await page.goto('/');
   await waitForFlutter(page);
 
+  // Debug: DOM-Zustand vor dem Klick loggen
+  const domInfo = await page.evaluate(() => {
+    const host = document.querySelector('flt-semantics-host');
+    const buttons = host?.querySelectorAll('flt-semantics[role="button"]') ?? [];
+    return {
+      hostExists: !!host,
+      hostChildren: host?.children.length ?? 0,
+      buttons: Array.from(buttons).map(b => ({
+        text: b.textContent?.trim(),
+        rect: JSON.stringify(b.getBoundingClientRect()),
+      })),
+      url: location.href,
+    };
+  });
+  console.log('DOM before click:', JSON.stringify(domInfo, null, 2));
+
   await clickFlutterButton(page, 'Anmelden');
+  console.log('Button clicked, current URL:', page.url());
+
+  await page.screenshot({ path: 'test-results/after-click.png' });
 
   await page.waitForURL(/localhost:8080/, { timeout: 10_000 });
 
