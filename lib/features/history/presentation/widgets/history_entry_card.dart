@@ -54,8 +54,9 @@ class HistoryEntryCard extends StatelessWidget {
                   const SizedBox(height: AppSpacing.px4),
                   Text(
                     entry.prompt,
-                    style: AppTypography.bodySm
-                        .copyWith(color: AppColors.slate800),
+                    style: AppTypography.bodySm.copyWith(
+                      color: AppColors.slate800,
+                    ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -136,9 +137,9 @@ class _ActionButtons extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
             onTap: () {
               context.read<ChatCubit>().loadConversation(
-                    entry.conversationId,
-                    conversationEntries,
-                  );
+                entry.conversationId,
+                conversationEntries,
+              );
               context.go(AppRoutes.dashboard);
             },
             child: const Padding(

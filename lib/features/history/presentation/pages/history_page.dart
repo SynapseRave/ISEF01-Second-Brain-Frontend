@@ -89,9 +89,9 @@ class _HistoryBody extends StatelessWidget {
         return switch (state) {
           HistoryInitial() || HistoryLoading() => const AppLoadingIndicator(),
           HistoryError(:final message) => AppErrorView(
-              message: message,
-              onRetry: () => context.read<HistoryCubit>().loadHistory(),
-            ),
+            message: message,
+            onRetry: () => context.read<HistoryCubit>().loadHistory(),
+          ),
           HistoryLoaded() => _HistoryList(state: state),
         };
       },
@@ -128,10 +128,7 @@ class _HistoryList extends StatelessWidget {
         }
         final id = conversationIds[index];
         final entries = groups[id]!;
-        return _ConversationGroup(
-          conversationId: id,
-          entries: entries,
-        );
+        return _ConversationGroup(conversationId: id, entries: entries);
       },
     );
   }
@@ -191,10 +188,7 @@ class _ConversationGroup extends StatelessWidget {
           ),
         ),
         ...entries.map(
-          (e) => HistoryEntryCard(
-            entry: e,
-            conversationEntries: entries,
-          ),
+          (e) => HistoryEntryCard(entry: e, conversationEntries: entries),
         ),
       ],
     );
