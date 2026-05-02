@@ -12,8 +12,14 @@ export async function waitForFlutter(page: Page): Promise<void> {
 }
 
 async function enableAccessibility(page: Page): Promise<void> {
-  await page.waitForSelector('flt-semantics-placeholder', { timeout: 10_000 });
-  // flt-semantics-placeholder liegt außerhalb des Viewports — direkt per JS aktivieren
+  // Primär: ?semantics=1 in der URL aktiviert Accessibility beim Flutter-Start.
+  // Fallback: flt-semantics-placeholder anklicken falls noch nicht aktiv.
+  const alreadyActive = await page.evaluate(() => {
+    const host = document.querySelector('flt-semantics-host');
+    return host != null && host.children.length > 0;
+  });
+  if (alreadyActive) return;
+
   await page.evaluate(() => {
     const el = document.querySelector('flt-semantics-placeholder') as HTMLElement | null;
     if (el) {
