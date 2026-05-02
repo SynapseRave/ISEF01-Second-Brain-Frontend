@@ -108,21 +108,24 @@ jobs:
 
       - name: Setup Keycloak realm and test user
         run: |
-          TOKEN=$(curl -sf -X POST \
+          TOKEN_RESPONSE=$(curl -s -X POST \
             http://localhost:8080/realms/master/protocol/openid-connect/token \
-            -d "username=admin&password=admin&grant_type=password&client_id=admin-cli" \
-            | python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
+            -d "username=admin&password=admin&grant_type=password&client_id=admin-cli")
+          echo "Token response: $TOKEN_RESPONSE"
+          TOKEN=$(echo "$TOKEN_RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
 
-          curl -sf -X POST http://localhost:8080/admin/realms \
+          REALM_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8080/admin/realms \
             -H "Authorization: Bearer $TOKEN" \
             -H "Content-Type: application/json" \
-            -d @keycloak/realm-export.json
+            -d @keycloak/realm-export.json)
+          echo "Realm import HTTP: $REALM_RESPONSE"
 
-          curl -sf -X POST \
+          USER_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
             http://localhost:8080/admin/realms/second-brain/users \
             -H "Authorization: Bearer $TOKEN" \
             -H "Content-Type: application/json" \
-            -d '{"username":"testuser","enabled":true,"credentials":[{"type":"password","value":"test","temporary":false}]}'
+            -d '{"username":"testuser","enabled":true,"credentials":[{"type":"password","value":"test","temporary":false}]}')
+          echo "User create HTTP: $USER_RESPONSE"
 
       - uses: actions/setup-node@v4
         with:
