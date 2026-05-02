@@ -56,9 +56,6 @@ GoRouter createRouter(AuthCubit authCubit) {
         return (isOnLogin || isServiceCallback || isKeycloakCallback)
             ? null
             : AppRoutes.login;
-        return (isOnLogin || isServiceCallback || isKeycloakCallback)
-            ? null
-            : AppRoutes.login;
       }
 
       if (!isAuthenticated && !isOnLogin) return AppRoutes.login;

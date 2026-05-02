@@ -69,19 +69,6 @@ jobs:
     name: E2E Tests (Playwright)
     runs-on: ubuntu-latest
     needs: build
-    services:
-      keycloak:
-        image: quay.io/keycloak/keycloak:26.0
-        env:
-          KC_BOOTSTRAP_ADMIN_USERNAME: admin
-          KC_BOOTSTRAP_ADMIN_PASSWORD: admin
-        ports:
-          - 8080:8080
-        options: >-
-          --health-cmd "curl -sf http://localhost:8080/health/ready"
-          --health-interval 5s
-          --health-timeout 3s
-          --health-retries 15
     steps:
       - uses: actions/checkout@v4
 
@@ -106,6 +93,15 @@ jobs:
           npm install -g serve
           serve -s build/web -l 3000 &
           sleep 3
+
+      - name: Start Keycloak
+        run: |
+          docker run -d --name keycloak \
+            -p 8080:8080 \
+            -e KC_BOOTSTRAP_ADMIN_USERNAME=admin \
+            -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin \
+            quay.io/keycloak/keycloak:26.0 start-dev
+          until curl -sf http://localhost:8080/health/ready; do sleep 3; done
 
       - name: Setup Keycloak realm and test user
         run: |
