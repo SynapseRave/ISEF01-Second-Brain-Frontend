@@ -30,9 +30,9 @@ sealed class SseEvent {
         ),
         // Stream abgeschlossen. input_id kann int oder UUID-String sein.
         'done' => SseDoneEvent(
-          (json['input_id'] as num?)?.toInt() ??
-              int.tryParse(json['input_id']?.toString() ?? '') ??
-              0,
+          json['input_id'] is num
+              ? (json['input_id'] as num).toInt()
+              : int.tryParse(json['input_id']?.toString() ?? '') ?? 0,
         ),
         'error' => SseErrorEvent(
           json['message'] as String? ?? 'Unbekannter Fehler.',
