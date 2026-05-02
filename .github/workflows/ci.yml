@@ -117,7 +117,7 @@ jobs:
           REALM_BODY=$(curl -s -X POST http://localhost:8080/admin/realms \
             -H "Authorization: Bearer $TOKEN" \
             -H "Content-Type: application/json" \
-            -d @keycloak/realm-export.json)
+            --data-binary @keycloak/realm-export.json)
           echo "Realm import response: $REALM_BODY"
 
           USER_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
