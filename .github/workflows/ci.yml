@@ -108,27 +108,41 @@ jobs:
 
       - name: Setup Keycloak realm and test user
         run: |
-          TOKEN_RESPONSE=$(curl -s -X POST \
+          TOKEN=$(curl -sf -X POST \
             http://localhost:8080/realms/master/protocol/openid-connect/token \
-            -d "username=admin&password=admin&grant_type=password&client_id=admin-cli")
-          echo "Token response: $TOKEN_RESPONSE"
-          TOKEN=$(echo "$TOKEN_RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
+            -d "username=admin&password=admin&grant_type=password&client_id=admin-cli" \
+            | python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
 
-          REALM_BODY=$(curl -s -X POST http://localhost:8080/admin/realms \
+          # Realm anlegen
+          curl -sf -X POST http://localhost:8080/admin/realms \
             -H "Authorization: Bearer $TOKEN" \
             -H "Content-Type: application/json" \
-            --data-binary @keycloak/realm-export.json)
-          echo "Realm import response: $REALM_BODY"
+            -d '{"realm":"second-brain","enabled":true,"sslRequired":"external"}'
 
-          USER_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
-            http://localhost:8080/admin/realms/second-brain/users \
+          # frontend-Client anlegen (public, PKCE S256, redirect auf localhost:3000)
+          curl -sf -X POST http://localhost:8080/admin/realms/second-brain/clients \
             -H "Authorization: Bearer $TOKEN" \
             -H "Content-Type: application/json" \
-            -d '{"username":"testuser","enabled":true,"credentials":[{"type":"password","value":"test","temporary":false}]}')
-          echo "User create HTTP: $USER_RESPONSE"
+            -d '{
+              "clientId":"frontend",
+              "enabled":true,
+              "publicClient":true,
+              "standardFlowEnabled":true,
+              "directAccessGrantsEnabled":false,
+              "redirectUris":["http://localhost:3000","http://localhost:3000/*"],
+              "webOrigins":["http://localhost:3000"],
+              "attributes":{"pkce.code.challenge.method":"S256"}
+            }'
+
+          # Testuser anlegen
+          curl -sf -X POST http://localhost:8080/admin/realms/second-brain/users \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"username":"testuser","enabled":true,"credentials":[{"type":"password","value":"test","temporary":false}]}'
 
           echo "OIDC discovery check:"
-          curl -s http://localhost:8080/realms/second-brain/.well-known/openid-configuration | python3 -c "import sys,json; d=json.load(sys.stdin); print('issuer:', d.get('issuer')); print('auth_endpoint:', d.get('authorization_endpoint'))"
+          curl -s http://localhost:8080/realms/second-brain/.well-known/openid-configuration \
+            | python3 -c "import sys,json; d=json.load(sys.stdin); print('issuer:', d.get('issuer')); print('auth_endpoint:', d.get('authorization_endpoint'))"
 
       - uses: actions/setup-node@v4
         with:
