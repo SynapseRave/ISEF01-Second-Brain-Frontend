@@ -7,6 +7,7 @@ import 'package:isef01_second_brain_frontend/features/chat/data/models/sse_event
 import 'package:isef01_second_brain_frontend/features/chat/domain/entities/message.dart';
 import 'package:isef01_second_brain_frontend/features/chat/domain/usecases/send_message_usecase.dart';
 import 'package:isef01_second_brain_frontend/features/chat/presentation/bloc/chat_state.dart';
+import 'package:isef01_second_brain_frontend/features/history/domain/entities/history_entry.dart';
 
 String _newUuid() {
   final rng = Random.secure();
@@ -121,6 +122,30 @@ class ChatCubit extends Cubit<ChatState> {
         clearStreaming: true,
       ),
     );
+  }
+
+  void loadConversation(String conversationId, List<HistoryEntry> entries) {
+    _subscription?.cancel();
+    final messages = entries
+        .expand<Message>(
+          (e) => [
+            Message(
+              id: e.id.toString(),
+              role: MessageRole.user,
+              content: e.prompt,
+              createdAt: e.createdAt,
+            ),
+            if (e.response != null)
+              Message(
+                id: '${e.id}_r',
+                role: MessageRole.assistant,
+                content: e.response!,
+                createdAt: e.createdAt,
+              ),
+          ],
+        )
+        .toList();
+    emit(ChatState(messages: messages, conversationId: conversationId));
   }
 
   void startNewConversation() {

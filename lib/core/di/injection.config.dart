@@ -37,6 +37,13 @@ import '../../features/chat/domain/repositories/chat_repository.dart' as _i2003;
 import '../../features/chat/domain/usecases/send_message_usecase.dart'
     as _i2004;
 import '../../features/chat/presentation/bloc/chat_cubit.dart' as _i2005;
+import '../../features/history/data/datasources/history_remote_datasource.dart'
+    as _i4001;
+import '../../features/history/data/repositories/history_repository_impl.dart'
+    as _i4002;
+import '../../features/history/domain/repositories/history_repository.dart'
+    as _i4003;
+import '../../features/history/presentation/bloc/history_cubit.dart' as _i4004;
 import '../../features/settings/data/datasources/auth_remote_datasource.dart'
     as _i448;
 import '../../features/settings/data/datasources/config_remote_datasource.dart'
@@ -120,6 +127,15 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i2005.ChatCubit>(
       () => _i2005.ChatCubit(gh<_i2004.SendMessageUseCase>()),
+    );
+    gh.lazySingleton<_i4001.HistoryRemoteDatasource>(
+      () => _i4001.HistoryRemoteDatasourceImpl(gh<_i361.Dio>()),
+    );
+    gh.lazySingleton<_i4003.HistoryRepository>(
+      () => _i4002.HistoryRepositoryImpl(gh<_i4001.HistoryRemoteDatasource>()),
+    );
+    gh.factory<_i4004.HistoryCubit>(
+      () => _i4004.HistoryCubit(gh<_i4003.HistoryRepository>()),
     );
     gh.lazySingleton<_i448.AuthRemoteDatasource>(
       () => _i448.AuthRemoteDatasourceImpl(gh<_i361.Dio>()),
