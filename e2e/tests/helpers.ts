@@ -39,8 +39,19 @@ export async function clickFlutterButton(page: Page, label: string): Promise<voi
     return Array.from(buttons).some(el => el.textContent?.trim() === lbl);
   }, label, { timeout: 15_000 });
 
-  const btn = page.locator('flt-semantics[role="button"]').filter({ hasText: label }).first();
-  await btn.click({ force: true });
+  // Koordinaten des Semantics-Elements ermitteln und per mouse.click auf den Canvas schicken,
+  // da Flutter Klick-Events auf Canvas-Koordinaten auswertet, nicht auf Semantics-Overlays.
+  const coords = await page.evaluate((lbl) => {
+    const host = document.querySelector('flt-semantics-host');
+    const buttons = host?.querySelectorAll('flt-semantics[role="button"]') ?? [];
+    const btn = Array.from(buttons).find(el => el.textContent?.trim() === lbl);
+    if (!btn) return null;
+    const rect = btn.getBoundingClientRect();
+    return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+  }, label);
+
+  if (!coords) throw new Error(`Flutter button "${label}" not found`);
+  await page.mouse.click(coords.x, coords.y);
 }
 
 export async function flutterTextExists(page: Page, text: string): Promise<boolean> {
