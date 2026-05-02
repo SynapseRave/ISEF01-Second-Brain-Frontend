@@ -34,7 +34,10 @@ void main() {
   group('GetHistoryUseCase', () {
     test('gibt PaginatedHistory zurück bei Erfolg', () async {
       when(
-        () => mockRepository.getHistory(page: any(named: 'page'), pageSize: any(named: 'pageSize')),
+        () => mockRepository.getHistory(
+          page: any(named: 'page'),
+          pageSize: any(named: 'pageSize'),
+        ),
       ).thenAnswer((_) async => (tPaginated, null));
 
       final (data, failure) = await useCase(page: 1);
@@ -45,18 +48,29 @@ void main() {
 
     test('ruft Repository mit page=1 standardmäßig auf', () async {
       when(
-        () => mockRepository.getHistory(page: any(named: 'page'), pageSize: any(named: 'pageSize')),
+        () => mockRepository.getHistory(
+          page: any(named: 'page'),
+          pageSize: any(named: 'pageSize'),
+        ),
       ).thenAnswer((_) async => (tPaginated, null));
 
       await useCase();
 
-      verify(() => mockRepository.getHistory(page: 1, pageSize: any(named: 'pageSize'))).called(1);
+      verify(
+        () => mockRepository.getHistory(
+          page: 1,
+          pageSize: any(named: 'pageSize'),
+        ),
+      ).called(1);
     });
 
     test('gibt Failure zurück wenn Repository fehlschlägt', () async {
       const tFailure = NetworkFailure();
       when(
-        () => mockRepository.getHistory(page: any(named: 'page'), pageSize: any(named: 'pageSize')),
+        () => mockRepository.getHistory(
+          page: any(named: 'page'),
+          pageSize: any(named: 'pageSize'),
+        ),
       ).thenAnswer((_) async => (null, tFailure));
 
       final (data, failure) = await useCase();

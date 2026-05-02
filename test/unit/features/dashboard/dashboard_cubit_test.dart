@@ -17,7 +17,11 @@ void main() {
     mockRepository = MockDashboardRepository();
   });
 
-  final tNote = const NoteItem(id: '1', title: 'Notiz', sourceService: 'notion');
+  final tNote = const NoteItem(
+    id: '1',
+    title: 'Notiz',
+    sourceService: 'notion',
+  );
   final tData = DashboardData(todos: const [], lastNote: tNote);
 
   group('DashboardCubit', () {
@@ -38,26 +42,29 @@ void main() {
       act: (cubit) => cubit.load(),
       expect: () => [
         isA<DashboardLoading>(),
-        predicate<DashboardState>((s) =>
-            s is DashboardLoaded &&
-            s.lastNote?.title == 'Notiz' &&
-            s.todos.isEmpty),
+        predicate<DashboardState>(
+          (s) =>
+              s is DashboardLoaded &&
+              s.lastNote?.title == 'Notiz' &&
+              s.todos.isEmpty,
+        ),
       ],
     );
 
     blocTest<DashboardCubit, DashboardState>(
       'load() Fehler → DashboardLoading dann DashboardError',
       build: () {
-        when(
-          () => mockRepository.getDashboard(),
-        ).thenAnswer((_) async => (data: null, failure: const NetworkFailure()));
+        when(() => mockRepository.getDashboard()).thenAnswer(
+          (_) async => (data: null, failure: const NetworkFailure()),
+        );
         return DashboardCubit(GetDashboardItemsUseCase(mockRepository));
       },
       act: (cubit) => cubit.load(),
       expect: () => [
         isA<DashboardLoading>(),
         predicate<DashboardState>(
-          (s) => s is DashboardError && s.message == 'Keine Netzwerkverbindung.',
+          (s) =>
+              s is DashboardError && s.message == 'Keine Netzwerkverbindung.',
         ),
       ],
     );

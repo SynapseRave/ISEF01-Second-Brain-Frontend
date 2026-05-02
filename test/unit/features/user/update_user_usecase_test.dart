@@ -18,7 +18,11 @@ void main() {
     useCase = UpdateUserUseCase(mockRepository);
   });
 
-  const tProfile = UserProfile(sub: 'user-1', name: 'Test', email: 'new@example.com');
+  const tProfile = UserProfile(
+    sub: 'user-1',
+    name: 'Test',
+    email: 'new@example.com',
+  );
   const tSettings = UserSettings(preferredLlm: 'claude-3');
   const tUpdated = UserData(profile: tProfile, settings: tSettings);
 
@@ -33,7 +37,10 @@ void main() {
         ),
       ).thenAnswer((_) async => (tUpdated, null));
 
-      final (data, failure) = await useCase(email: 'new@example.com', preferredLlm: 'claude-3');
+      final (data, failure) = await useCase(
+        email: 'new@example.com',
+        preferredLlm: 'claude-3',
+      );
 
       expect(data, tUpdated);
       expect(failure, isNull);

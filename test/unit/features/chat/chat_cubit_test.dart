@@ -36,7 +36,8 @@ void main() {
       'sendMessage → erster State hat isStreaming=true und User-Message',
       build: () {
         when(
-          () => mockUseCase(any(), conversationId: any(named: 'conversationId')),
+          () =>
+              mockUseCase(any(), conversationId: any(named: 'conversationId')),
         ).thenAnswer((_) => const Stream.empty());
         return ChatCubit(mockUseCase);
       },
@@ -58,7 +59,8 @@ void main() {
       'SseChunkEvent → streamingContent wächst schrittweise',
       build: () {
         when(
-          () => mockUseCase(any(), conversationId: any(named: 'conversationId')),
+          () =>
+              mockUseCase(any(), conversationId: any(named: 'conversationId')),
         ).thenAnswer(
           (_) => Stream.fromIterable([
             const SseChunkEvent('Hel'),
@@ -82,9 +84,12 @@ void main() {
       'SseStatusEvent → statusMessage gesetzt',
       build: () {
         when(
-          () => mockUseCase(any(), conversationId: any(named: 'conversationId')),
+          () =>
+              mockUseCase(any(), conversationId: any(named: 'conversationId')),
         ).thenAnswer(
-          (_) => Stream.fromIterable([const SseStatusEvent('LLM wird angefragt...')]),
+          (_) => Stream.fromIterable([
+            const SseStatusEvent('LLM wird angefragt...'),
+          ]),
         );
         return ChatCubit(mockUseCase);
       },
@@ -100,7 +105,8 @@ void main() {
       'SseResultEvent ohne vorherige Chunks → streamingContent übernommen und finalisiert',
       build: () {
         when(
-          () => mockUseCase(any(), conversationId: any(named: 'conversationId')),
+          () =>
+              mockUseCase(any(), conversationId: any(named: 'conversationId')),
         ).thenAnswer(
           (_) => Stream.fromIterable([
             const SseResultEvent(response: 'Komplette Antwort'),
@@ -120,7 +126,8 @@ void main() {
       'SseResultEvent mit vorherigen Chunks → result-Response ignoriert',
       build: () {
         when(
-          () => mockUseCase(any(), conversationId: any(named: 'conversationId')),
+          () =>
+              mockUseCase(any(), conversationId: any(named: 'conversationId')),
         ).thenAnswer(
           (_) => Stream.fromIterable([
             const SseChunkEvent('Chunk'),
@@ -139,7 +146,8 @@ void main() {
       'SseDoneEvent → Assistant-Message finalisiert, isStreaming=false',
       build: () {
         when(
-          () => mockUseCase(any(), conversationId: any(named: 'conversationId')),
+          () =>
+              mockUseCase(any(), conversationId: any(named: 'conversationId')),
         ).thenAnswer(
           (_) => Stream.fromIterable([
             const SseChunkEvent('Antwort'),
@@ -162,7 +170,8 @@ void main() {
       'SseErrorEvent → error gesetzt, isStreaming=false',
       build: () {
         when(
-          () => mockUseCase(any(), conversationId: any(named: 'conversationId')),
+          () =>
+              mockUseCase(any(), conversationId: any(named: 'conversationId')),
         ).thenAnswer(
           (_) => Stream.fromIterable([const SseErrorEvent('Serverfehler')]),
         );
@@ -179,7 +188,8 @@ void main() {
       'Stream-Fehler → Verbindungsfehler-State',
       build: () {
         when(
-          () => mockUseCase(any(), conversationId: any(named: 'conversationId')),
+          () =>
+              mockUseCase(any(), conversationId: any(named: 'conversationId')),
         ).thenAnswer((_) => Stream.error(Exception('Netzwerk weg')));
         return ChatCubit(mockUseCase);
       },
@@ -194,7 +204,8 @@ void main() {
       'startNewConversation → State vollständig zurückgesetzt',
       build: () {
         when(
-          () => mockUseCase(any(), conversationId: any(named: 'conversationId')),
+          () =>
+              mockUseCase(any(), conversationId: any(named: 'conversationId')),
         ).thenAnswer((_) => const Stream.empty());
         return ChatCubit(mockUseCase);
       },

@@ -15,8 +15,9 @@ void main() {
     });
 
     test('status → SseStatusEvent mit message', () {
-      final event =
-          SseEvent.tryParse('data: {"type":"status","message":"LLM läuft"}');
+      final event = SseEvent.tryParse(
+        'data: {"type":"status","message":"LLM läuft"}',
+      );
       expect(event, isA<SseStatusEvent>());
       expect((event as SseStatusEvent).message, 'LLM läuft');
     });
@@ -53,8 +54,7 @@ void main() {
     });
 
     test('done mit String input_id → SseDoneEvent', () {
-      final event =
-          SseEvent.tryParse('data: {"type":"done","input_id":"123"}');
+      final event = SseEvent.tryParse('data: {"type":"done","input_id":"123"}');
       expect(event, isA<SseDoneEvent>());
       expect((event as SseDoneEvent).inputId, 123);
     });
@@ -69,8 +69,9 @@ void main() {
     });
 
     test('error → SseErrorEvent', () {
-      final event =
-          SseEvent.tryParse('data: {"type":"error","message":"Timeout"}');
+      final event = SseEvent.tryParse(
+        'data: {"type":"error","message":"Timeout"}',
+      );
       expect(event, isA<SseErrorEvent>());
       expect((event as SseErrorEvent).message, 'Timeout');
     });

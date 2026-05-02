@@ -18,13 +18,19 @@ void main() {
     useCase = GetUserUseCase(mockRepository);
   });
 
-  const tProfile = UserProfile(sub: 'user-1', name: 'Test', email: 'test@example.com');
+  const tProfile = UserProfile(
+    sub: 'user-1',
+    name: 'Test',
+    email: 'test@example.com',
+  );
   const tSettings = UserSettings(preferredLlm: 'gpt-4');
   const tUserData = UserData(profile: tProfile, settings: tSettings);
 
   group('GetUserUseCase', () {
     test('gibt UserData zurück bei Erfolg', () async {
-      when(() => mockRepository.getUser()).thenAnswer((_) async => (tUserData, null));
+      when(
+        () => mockRepository.getUser(),
+      ).thenAnswer((_) async => (tUserData, null));
 
       final (data, failure) = await useCase();
 
@@ -35,7 +41,9 @@ void main() {
 
     test('gibt Failure zurück wenn Repository fehlschlägt', () async {
       const tFailure = AuthFailure();
-      when(() => mockRepository.getUser()).thenAnswer((_) async => (null, tFailure));
+      when(
+        () => mockRepository.getUser(),
+      ).thenAnswer((_) async => (null, tFailure));
 
       final (data, failure) = await useCase();
 

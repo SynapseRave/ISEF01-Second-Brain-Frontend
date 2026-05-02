@@ -28,7 +28,9 @@ void main() {
       final result = await useCase(tService, tCredentials);
 
       expect(result, isNull);
-      verify(() => mockRepository.storeCredential(tService, tCredentials)).called(1);
+      verify(
+        () => mockRepository.storeCredential(tService, tCredentials),
+      ).called(1);
     });
 
     test('gibt Failure zurück wenn Repository fehlschlägt', () async {

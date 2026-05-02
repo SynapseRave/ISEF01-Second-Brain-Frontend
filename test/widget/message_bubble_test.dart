@@ -14,7 +14,9 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(home: Scaffold(body: MessageBubble(message: message))),
+        MaterialApp(
+          home: Scaffold(body: MessageBubble(message: message)),
+        ),
       );
 
       expect(find.text('Hallo Welt'), findsOneWidget);
@@ -29,7 +31,9 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(home: Scaffold(body: MessageBubble(message: message))),
+        MaterialApp(
+          home: Scaffold(body: MessageBubble(message: message)),
+        ),
       );
 
       final align = tester.widget<Align>(find.byType(Align));
@@ -45,7 +49,9 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(home: Scaffold(body: MessageBubble(message: message))),
+        MaterialApp(
+          home: Scaffold(body: MessageBubble(message: message)),
+        ),
       );
 
       expect(find.text('Antwort vom Bot'), findsOneWidget);

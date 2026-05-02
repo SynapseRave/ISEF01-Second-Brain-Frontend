@@ -18,23 +18,23 @@ void main() {
   });
 
   HistoryEntry makeEntry(int id) => HistoryEntry(
-        id: id,
-        prompt: 'Frage $id',
-        createdAt: DateTime(2024, 1, id),
-        conversationId: 'conv-$id',
-      );
+    id: id,
+    prompt: 'Frage $id',
+    createdAt: DateTime(2024, 1, id),
+    conversationId: 'conv-$id',
+  );
 
   PaginatedHistory makePage({
     required List<HistoryEntry> items,
     required int page,
     required int pages,
   }) => PaginatedHistory(
-        items: items,
-        total: pages * 2,
-        page: page,
-        pageSize: 2,
-        pages: pages,
-      );
+    items: items,
+    total: pages * 2,
+    page: page,
+    pageSize: 2,
+    pages: pages,
+  );
 
   group('HistoryCubit', () {
     test('Initialzustand ist HistoryInitial', () {
@@ -52,19 +52,22 @@ void main() {
             pageSize: any(named: 'pageSize'),
           ),
         ).thenAnswer(
-          (_) async => (makePage(items: [makeEntry(1)], page: 1, pages: 2), null),
+          (_) async =>
+              (makePage(items: [makeEntry(1)], page: 1, pages: 2), null),
         );
         return HistoryCubit(mockRepository);
       },
       act: (cubit) => cubit.loadHistory(),
       expect: () => [
         isA<HistoryLoading>(),
-        predicate<HistoryState>((s) =>
-            s is HistoryLoaded &&
-            s.entries.length == 1 &&
-            s.currentPage == 1 &&
-            s.totalPages == 2 &&
-            s.hasMore),
+        predicate<HistoryState>(
+          (s) =>
+              s is HistoryLoaded &&
+              s.entries.length == 1 &&
+              s.currentPage == 1 &&
+              s.totalPages == 2 &&
+              s.hasMore,
+        ),
       ],
     );
 
@@ -80,10 +83,7 @@ void main() {
         return HistoryCubit(mockRepository);
       },
       act: (cubit) => cubit.loadHistory(),
-      expect: () => [
-        isA<HistoryLoading>(),
-        isA<HistoryError>(),
-      ],
+      expect: () => [isA<HistoryLoading>(), isA<HistoryError>()],
     );
 
     blocTest<HistoryCubit, HistoryState>(
@@ -110,13 +110,17 @@ void main() {
       },
       expect: () => [
         isA<HistoryLoading>(),
-        predicate<HistoryState>((s) => s is HistoryLoaded && s.entries.length == 1),
+        predicate<HistoryState>(
+          (s) => s is HistoryLoaded && s.entries.length == 1,
+        ),
         predicate<HistoryState>((s) => s is HistoryLoaded && s.isLoadingMore),
-        predicate<HistoryState>((s) =>
-            s is HistoryLoaded &&
-            s.entries.length == 2 &&
-            s.currentPage == 2 &&
-            !s.hasMore),
+        predicate<HistoryState>(
+          (s) =>
+              s is HistoryLoaded &&
+              s.entries.length == 2 &&
+              s.currentPage == 2 &&
+              !s.hasMore,
+        ),
       ],
     );
 
@@ -143,11 +147,15 @@ void main() {
       },
       expect: () => [
         isA<HistoryLoading>(),
-        predicate<HistoryState>((s) => s is HistoryLoaded && s.entries.length == 2),
-        predicate<HistoryState>((s) =>
-            s is HistoryLoaded &&
-            s.entries.length == 1 &&
-            s.entries.first.id == 2),
+        predicate<HistoryState>(
+          (s) => s is HistoryLoaded && s.entries.length == 2,
+        ),
+        predicate<HistoryState>(
+          (s) =>
+              s is HistoryLoaded &&
+              s.entries.length == 1 &&
+              s.entries.first.id == 2,
+        ),
       ],
     );
   });
