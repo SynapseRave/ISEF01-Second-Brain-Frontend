@@ -12,11 +12,9 @@ export async function waitForFlutter(page: Page): Promise<void> {
 }
 
 async function enableAccessibility(page: Page): Promise<void> {
-  await page.evaluate(() => {
-    const btn = document.querySelector('flt-semantics-placeholder') as HTMLElement | null;
-    if (btn) btn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-  });
-  // Warten bis flt-semantics-host Elemente enthält
+  const placeholder = page.locator('flt-semantics-placeholder');
+  await placeholder.waitFor({ timeout: 10_000 });
+  await placeholder.click({ force: true });
   await page.waitForFunction(() => {
     const host = document.querySelector('flt-semantics-host');
     return host != null && host.children.length > 0;
@@ -34,12 +32,8 @@ export async function clickFlutterButton(page: Page, label: string): Promise<voi
     return Array.from(buttons).some(el => el.textContent?.trim() === lbl);
   }, label, { timeout: 15_000 });
 
-  await page.evaluate((lbl) => {
-    const host = document.querySelector('flt-semantics-host');
-    const buttons = host?.querySelectorAll('flt-semantics[role="button"]') ?? [];
-    const btn = Array.from(buttons).find(el => el.textContent?.trim() === lbl) as HTMLElement | null;
-    btn?.click();
-  }, label);
+  const btn = page.locator('flt-semantics[role="button"]').filter({ hasText: label }).first();
+  await btn.click({ force: true });
 }
 
 export async function flutterTextExists(page: Page, text: string): Promise<boolean> {
