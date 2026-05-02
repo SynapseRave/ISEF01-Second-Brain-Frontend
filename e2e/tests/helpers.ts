@@ -12,9 +12,16 @@ export async function waitForFlutter(page: Page): Promise<void> {
 }
 
 async function enableAccessibility(page: Page): Promise<void> {
-  const placeholder = page.locator('flt-semantics-placeholder');
-  await placeholder.waitFor({ timeout: 10_000 });
-  await placeholder.click({ force: true });
+  await page.waitForSelector('flt-semantics-placeholder', { timeout: 10_000 });
+  // flt-semantics-placeholder liegt außerhalb des Viewports — direkt per JS aktivieren
+  await page.evaluate(() => {
+    const el = document.querySelector('flt-semantics-placeholder') as HTMLElement | null;
+    if (el) {
+      el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, isPrimary: true }));
+      el.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, cancelable: true, isPrimary: true }));
+      el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+    }
+  });
   await page.waitForFunction(() => {
     const host = document.querySelector('flt-semantics-host');
     return host != null && host.children.length > 0;
