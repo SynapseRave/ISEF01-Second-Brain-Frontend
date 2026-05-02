@@ -134,11 +134,11 @@ jobs:
               "attributes":{"pkce.code.challenge.method":"S256"}
             }'
 
-          # Testuser anlegen
+          # Testuser anlegen (requiredActions leer → kein "Update Account"-Zwang)
           curl -sf -X POST http://localhost:8080/admin/realms/second-brain/users \
             -H "Authorization: Bearer $TOKEN" \
             -H "Content-Type: application/json" \
-            -d '{"username":"testuser","enabled":true,"credentials":[{"type":"password","value":"test","temporary":false}]}'
+            -d '{"username":"testuser","email":"testuser@example.com","firstName":"Test","lastName":"User","enabled":true,"emailVerified":true,"requiredActions":[],"credentials":[{"type":"password","value":"test","temporary":false}]}'
 
           echo "OIDC discovery check:"
           curl -s http://localhost:8080/realms/second-brain/.well-known/openid-configuration \
