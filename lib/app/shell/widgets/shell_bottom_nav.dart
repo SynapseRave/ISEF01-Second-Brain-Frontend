@@ -22,6 +22,8 @@ class ShellBottomNav extends StatelessWidget {
     );
     if (currentIndex == -1) currentIndex = 0;
 
+    const unavailableRoutes = {'/search'};
+
     return Container(
       decoration: const BoxDecoration(
         border: Border(top: BorderSide(color: AppColors.slate200)),
@@ -41,7 +43,10 @@ class ShellBottomNav extends StatelessWidget {
         items: _items
             .map(
               (item) => BottomNavigationBarItem(
-                icon: Icon(item.$1, size: 22),
+                icon: Opacity(
+                  opacity: unavailableRoutes.contains(item.$3) ? 0.4 : 1.0,
+                  child: Icon(item.$1, size: 22),
+                ),
                 label: item.$2,
               ),
             )

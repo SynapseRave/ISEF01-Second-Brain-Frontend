@@ -214,6 +214,8 @@ OAuth services open a browser redirect; API-key services use `ApiKeyInputDialog`
 
 **Known limitations:**
 - **Microsoft OneNote**: `MICROSOFT_CLIENT_ID` ist nicht konfiguriert — Azure App-Registrierung scheitert an fehlendem organisationalem Tenant (persönlicher Microsoft-Account reicht nicht aus). Der OneNote-Button in der Settings-UI ist deaktiviert mit einem Hinweis. Der Code (Connector, Callback-Route, Backend-MCP-Server) ist vollständig implementiert und kann jederzeit aktiviert werden, sobald eine Client-ID vorliegt. Zum Aktivieren: `MICROSOFT_CLIENT_ID` in `.env` (Backend) setzen — `_disabledServices` in `settings_page.dart` muss dann `ServiceType.oneNote` nicht mehr enthalten.
+- **Obsidian**: Backend-Integration noch nicht implementiert. Der "Verbinden"-Button in der Settings-UI ist deaktiviert mit einem Hinweis. Das Frontend (Dialog, Modell, ServiceType) ist vollständig implementiert und kann jederzeit aktiviert werden, sobald die Backend-Anbindung steht. Zum Aktivieren: `ServiceType.obsidian` aus `_disabledServices` in `settings_page.dart` entfernen.
+- **Suche**: Dienstübergreifende Suche ist noch nicht implementiert (geplant für eine spätere Phase). Die Route `/search` existiert, zeigt aber eine "nicht verfügbar"-Seite. In der Sidebar ist der Eintrag ausgegraut. Zum Aktivieren: `'/search'` aus `_unavailableRoutes` in `shell_sidebar.dart` und der lokalen Konstante in `shell_bottom_nav.dart` entfernen, sowie `SearchPage` implementieren.
 
 **Runtime configuration (dart-defines):**
 ```bash
