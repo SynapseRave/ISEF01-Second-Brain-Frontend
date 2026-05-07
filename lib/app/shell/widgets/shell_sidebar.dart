@@ -20,6 +20,9 @@ class _NavItem {
   final String route;
 }
 
+/// Routen, die in der aktuellen Version noch nicht verfügbar sind.
+const _unavailableRoutes = {'/search'};
+
 const _navItems = [
   _NavItem(icon: Icons.grid_view_rounded, label: 'Dashboard', route: '/'),
   _NavItem(icon: Icons.search_rounded, label: 'Suche', route: '/search'),
@@ -160,6 +163,7 @@ class _NavTile extends StatelessWidget {
     final isActive = item.route == '/'
         ? location == '/'
         : location.startsWith(item.route);
+    final isUnavailable = _unavailableRoutes.contains(item.route);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.px2),
@@ -168,6 +172,7 @@ class _NavTile extends StatelessWidget {
         label: item.label,
         collapsed: collapsed,
         isActive: isActive,
+        isUnavailable: isUnavailable,
         onTap: () => context.go(item.route),
       ),
     );
@@ -183,18 +188,24 @@ class _SidebarTile extends StatelessWidget {
     required this.collapsed,
     required this.isActive,
     required this.onTap,
+    this.isUnavailable = false,
   });
 
   final IconData icon;
   final String label;
   final bool collapsed;
   final bool isActive;
+  final bool isUnavailable;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    final tooltipMessage = collapsed
+        ? (isUnavailable ? '$label (nicht verfügbar)' : label)
+        : (isUnavailable ? 'Noch nicht verfügbar' : '');
+
     return Tooltip(
-      message: collapsed ? label : '',
+      message: tooltipMessage,
       preferBelow: false,
       child: InkWell(
         onTap: onTap,
@@ -214,7 +225,9 @@ class _SidebarTile extends StatelessWidget {
               Icon(
                 icon,
                 size: 18,
-                color: isActive ? AppColors.white : AppColors.slate400,
+                color: isActive
+                    ? AppColors.white
+                    : (isUnavailable ? AppColors.slate600 : AppColors.slate400),
               ),
               if (!collapsed) ...[
                 const SizedBox(width: AppSpacing.px10),
@@ -222,11 +235,21 @@ class _SidebarTile extends StatelessWidget {
                   child: Text(
                     label,
                     style: AppTypography.labelSm.copyWith(
-                      color: isActive ? AppColors.white : AppColors.slate300,
+                      color: isActive
+                          ? AppColors.white
+                          : (isUnavailable
+                              ? AppColors.slate600
+                              : AppColors.slate300),
                       fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
                     ),
                   ),
                 ),
+                if (isUnavailable)
+                  const Icon(
+                    Icons.lock_outline_rounded,
+                    size: 12,
+                    color: AppColors.slate600,
+                  ),
               ],
             ],
           ),

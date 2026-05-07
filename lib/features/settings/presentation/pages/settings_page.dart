@@ -31,7 +31,7 @@ class _SettingsPageState extends State<SettingsPage> {
     ServiceType.oneNote,
   };
 
-  static const _disabledServices = {ServiceType.oneNote};
+  static const _disabledServices = {ServiceType.oneNote, ServiceType.obsidian};
 
   static const _supportedServices = [
     ServiceType.googleCalendar,
@@ -261,6 +261,9 @@ class _SettingsPageState extends State<SettingsPage> {
     ServiceType.oneNote =>
       'Microsoft OAuth-App nicht konfiguriert. '
           'MICROSOFT_CLIENT_ID fehlt - Integration derzeit nicht verfuegbar.',
+    ServiceType.obsidian =>
+      'Obsidian-Anbindung wird in einer zukünftigen Version bereitgestellt. '
+          'Das Local REST API Plugin wird dann unterstützt.',
     _ => 'Diese Integration ist derzeit nicht verfuegbar.',
   };
 
