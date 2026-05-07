@@ -238,8 +238,8 @@ class _SidebarTile extends StatelessWidget {
                       color: isActive
                           ? AppColors.white
                           : (isUnavailable
-                              ? AppColors.slate600
-                              : AppColors.slate300),
+                                ? AppColors.slate600
+                                : AppColors.slate300),
                       fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
                     ),
                   ),
